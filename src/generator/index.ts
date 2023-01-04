@@ -11,7 +11,7 @@ export const templates = {
 
 export const generate = async ({ theme, data, id }: GenerateData): Promise<GeneratorResponse> => {
   if (!data) return { error: true, message: 'No data provided', id: undefined }
-  id = id || Math.random().toString(36).substring(2)
+  id = id || Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
   theme = theme === 'grid' ? 'classicCollage' : theme
 
   const factory: TemplateFactory = templates[theme]
@@ -22,7 +22,7 @@ export const generate = async ({ theme, data, id }: GenerateData): Promise<Gener
   try {
     await factory(id, data)
   } catch (e) {
-    warn('generator.generate', `error generating ${theme} for ${id}: ${e.message}`)
+    warn('generator.generate', `error generating ${theme} for ${id}: ${e.stack}`)
     return { error: true, message: e.message, id: undefined }
   }
   const b = Date.now()

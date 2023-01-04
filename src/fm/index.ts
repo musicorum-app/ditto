@@ -8,30 +8,33 @@ import { Entity } from './types.js'
 const FM_API_KEY = '308ad08f8211e5cbcd7cb886eb95a2db'
 const client = new Client(FM_API_KEY)
 
-const cachedRequest = async (method: string, params: Record<string, string>) => {
+const cachedRequest = async (method: string, params: Record<string, string>, ttl: number) => {
+  debug('fm.cachedRequest', `requesting ${method} with params ${JSON.stringify(params)}`)
   const c = await backend().get(`${method}${JSON.stringify(params)}`)
   if (c) {
     debug('fm.cachedRequest', `cache hit for ${method} (user = ${params.user})`)
     return c
   }
+  debug('fm.cachedRequest', `cache miss for ${method} (user = ${params.user})`)
 
   const r = await client.request(method, params)
-  await backend().set(`${method}${JSON.stringify(params)}`, r)
+  await backend().setTTL(`${method}${JSON.stringify(params)}`, r, ttl)
+  debug('fm.cachedRequest', `cached ${method} (user = ${params.user})`)
   return r
 }
 
 export const getTopArtists = async (user: string, amount: number = 50): Promise<Entity[]> => {
-  const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString() })
+  const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString() }, 60 * 60 * 1000)
   return response.topartists.artist.map(sanitizeEntity)
 }
 
 export const getTopTracks = async (user: string, amount: number = 50): Promise<Entity[]> => {
-  const response = await cachedRequest('user.getTopTracks', { user, limit: amount.toString() })
+  const response = await cachedRequest('user.getTopTracks', { user, limit: amount.toString() }, 60 * 60 * 1000)
   return response.topartists.artist.map(sanitizeEntity)
 }
 
 export const getTopAlbums = async (user: string, amount: number = 50): Promise<Entity[]> => {
-  const response = await cachedRequest('user.getTopAlbums', { user, limit: amount.toString() })
+  const response = await cachedRequest('user.getTopAlbums', { user, limit: amount.toString() }, 60 * 60 * 1000)
   return response.topartists.artist.map(sanitizeEntity)
 }
 

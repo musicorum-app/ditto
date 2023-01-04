@@ -6,6 +6,8 @@ import { extractIDFromURL, getImage } from '../../imaging.js'
 import { Image, SKRSContext2D } from '@napi-rs/canvas'
 import { getTopAlbums, getTopArtists, getTopTracks } from '../../fm/index.js'
 import { Entity } from '../../fm/types.js'
+import { debug } from '../../logging.js'
+import { getImagesBeforehand } from '../utils/collages.js'
 
 const determineSize = ({ rows, columns }: CollageData): [number, number] => {
   return [rows * COLLAGE_TILE_SIZE, columns * COLLAGE_TILE_SIZE]
@@ -19,6 +21,7 @@ const determineTilePosition = (index: number, { columns }: CollageData): [number
 
 const drawTile = async (tile: Entity, index: number, ctx: SKRSContext2D, data: CollageData) => {
   const [x, y] = determineTilePosition(index, data)
+  debug('classicCollage.drawTile', `drawing tile for ${tile.name} at (${x}, ${y})`)
   const buffer = await getImage(extractIDFromURL(tile.imageURL)!, COLLAGE_TILE_SIZE)
   const image = new Image()
   image.src = buffer
@@ -45,6 +48,7 @@ export default async (id: string, data: CollageData): Promise<void> => {
   if (data.asymmetric) return asymmetricCollage(id, data)
   const { ctx, finish } = create(...determineSize(data))
   const entities = await CollageEntityTypes[data.entity](data.username, data.rows * data.columns)
+  await getImagesBeforehand(entities, COLLAGE_TILE_SIZE)
   await Promise.allSettled(entities.map((tile, index) => drawTile(tile, index, ctx, data)))
   return finish(id)
 }

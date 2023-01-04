@@ -15,17 +15,9 @@ export const generatedImagePath = (id: string) => `${GENERATION_CACHE_DIR}/${id}
 
 const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
 
-export const checkIfShouldUpdate = async (id: string, dimensions: number = 300, maxAgeInDays: number): Promise<boolean> => {
-    const data = await stat(`${CACHE_DIR}/${id}_${dimensions}.jpg`).catch(() => undefined)
-    if (!data) {
-        downloadImage(id, dimensions).then(() => undefined)
-        return true
-    }
-    if (data.mtimeMs < Date.now() - maxAgeInDays * 24 * 60 * 60 * 1000) {
-        downloadImage(id, dimensions).then(() => undefined)
-        return true
-    }
-    return false
+export const isImageCached = async (id: string, dimensions: number = 300): Promise<boolean> => {
+    const file = await stat(`${CACHE_DIR}/${id}_${dimensions}.jpg`).catch(() => undefined)
+    return !!file
 }
 
 export const extractIDFromURL = (url: string): string | undefined => {
@@ -37,7 +29,7 @@ export const getImage = async (id: string, dimensions: number = 300): Promise<Bu
     return image || downloadImage(id, dimensions)
 }
 
-const downloadImage = async (id: string, dimensions: number = 300): Promise<Buffer> => {
+export const downloadImage = async (id: string, dimensions: number = 300): Promise<Buffer> => {
     info('imaging.downloadImage', `downloading image ${id} with dimensions ${dimensions}`)
     const url = getImageURL(id, dimensions)
     const response = await fetch(url)
