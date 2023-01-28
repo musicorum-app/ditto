@@ -1,5 +1,6 @@
-import { writeFile, mkdir, readFile, stat } from 'node:fs/promises'
+import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import { error, info } from './logging.js'
+import { statSync } from 'node:fs'
 
 const CACHE_DIR = process.env.CACHE_DIR ?? '.cache/ditto'
 export const GENERATION_CACHE_DIR = process.env.EXPORT_DIR ?? `${CACHE_DIR}/generated`
@@ -15,9 +16,13 @@ export const generatedImagePath = (id: string) => `${GENERATION_CACHE_DIR}/${id}
 
 const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
 
-export const isImageCached = async (id: string, dimensions: number = 300): Promise<boolean> => {
-    const file = await stat(`${CACHE_DIR}/${id}_${dimensions}.jpg`).catch(() => undefined)
-    return !!file
+export const isImageCached = (id: string, dimensions: number = 300): boolean => {
+    try {
+        const file = statSync(`${CACHE_DIR}/${id}_${dimensions}.jpg`)
+        return !!file
+    } catch (_) {
+        return false
+    }
 }
 
 export const extractIDFromURL = (url: string): string | undefined => {

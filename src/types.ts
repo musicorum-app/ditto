@@ -13,8 +13,13 @@ export interface CollageData extends TemplateData {
   username: string
   entity: string
   asymmetric?: boolean
+  period?: string
   rows: number
   columns: number
+  padded?: boolean
+  show_labels?: boolean
+
+  show_play_count?: boolean
 }
 
 export interface GeneratorResponse {

@@ -1,14 +1,16 @@
 import { debug, error, info, warn } from '../logging.js'
 import InMemoryBackend from './inMemory.js'
 import { CachingBackend } from './backend.js'
+import RedisBackend from './redis.js'
 
 let internalBackend: CachingBackend | undefined
 
 export const start = async (): Promise<void> => {
   debug('caching.start', 'starting caching engine')
-  if (process.env.REDIS_URL) {
+  let redisBackend: RedisBackend | undefined = new RedisBackend()
+  if (await redisBackend!.start()) {
     info('caching.start', 'redis was found, using redis')
-    return
+    internalBackend = redisBackend
   } else {
     warn('caching.start', 'redis was not found, using simple in-memory')
     internalBackend = new InMemoryBackend()

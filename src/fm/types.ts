@@ -1,6 +1,6 @@
 export interface Entity {
   mbid: string | undefined
   name: string
-  playcount: string
+  playcount: number
   imageURL: string
 }

@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Asymmetric collage (1 month, artist, with labels)",
+    "path": "asymmetric_collage",
+    "data": {
+      "theme": "asymmetric_collage",
+      "data": {
+        "username": "blueslimee",
+        "period": "1month",
+        "entity": "artist",
+        "show_labels": true
+      }
+    }
+  },
+  {
+    "name": "Classic collage (5x5, padded, 1 month, album, with labels)",
+    "path": "classic_collage",
+    "data": {
+      "theme": "grid",
+      "data": {
+        "username": "blueslimee",
+        "rows": 5,
+        "columns": 5,
+        "period": "1month",
+        "entity": "album",
+        "padded": true,
+        "show_labels": true
+      }
+    }
+  }
+]

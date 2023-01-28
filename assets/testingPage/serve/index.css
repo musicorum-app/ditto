@@ -1,0 +1,27 @@
+/* Apply Inter font */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://ditto.cool/fonts/inter/Inter-Regular.woff2') format('woff2');
+}
+
+body {
+    background-color: #212121;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+}
+
+code {
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+    font-size: 14px;
+    background-color: #404040;
+}
+
+img {
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

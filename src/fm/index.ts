@@ -23,19 +23,19 @@ const cachedRequest = async (method: string, params: Record<string, string>, ttl
   return r
 }
 
-export const getTopArtists = async (user: string, amount: number = 50): Promise<Entity[]> => {
-  const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString() }, 60 * 60 * 1000)
-  return response.topartists.artist.map(sanitizeEntity)
+export const getTopArtists = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
+  const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
+  return response.topartists.artist.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
-export const getTopTracks = async (user: string, amount: number = 50): Promise<Entity[]> => {
-  const response = await cachedRequest('user.getTopTracks', { user, limit: amount.toString() }, 60 * 60 * 1000)
-  return response.topartists.artist.map(sanitizeEntity)
+export const getTopTracks = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
+  const response = await cachedRequest('user.getTopTracks', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
+  return response.toptracks.track.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
-export const getTopAlbums = async (user: string, amount: number = 50): Promise<Entity[]> => {
-  const response = await cachedRequest('user.getTopAlbums', { user, limit: amount.toString() }, 60 * 60 * 1000)
-  return response.topartists.artist.map(sanitizeEntity)
+export const getTopAlbums = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
+  const response = await cachedRequest('user.getTopAlbums', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
+  return response.topalbums.album.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
 function sanitizeEntity (entity: Record<string, any>): Entity {
@@ -43,6 +43,6 @@ function sanitizeEntity (entity: Record<string, any>): Entity {
     mbid: entity.mbid || undefined,
     name: entity.name as string,
     imageURL: (entity.image[3]['#text']) as string,
-    playcount: entity.playcount || '0'
+    playcount: parseInt(entity.playcount) || 0
   }
 }
