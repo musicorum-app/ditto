@@ -2,30 +2,36 @@ import Client from '@musicorum/lastfm'
 import { backend } from '../caching/index.js'
 import { debug } from '../logging.js'
 import { Entity } from './types.js'
+import { createHash } from 'crypto'
 
-// This is the API key for the last.fm mobile app.
-// We are using it here because it returns artist's images properly.
-const FM_API_KEY = '308ad08f8211e5cbcd7cb886eb95a2db'
-const client = new Client(FM_API_KEY)
+const client = new Client(process.env.FM_API_KEY!)
+
+const md5 = (text: string) => {
+  return createHash('md5').update(text).digest('hex')
+}
 
 const cachedRequest = async (method: string, params: Record<string, string>, ttl: number) => {
   debug('fm.cachedRequest', `requesting ${method} with params ${JSON.stringify(params)}`)
-  const c = await backend().get(`${method}${JSON.stringify(params)}`)
+  const hash = md5(method + Object.values(params).join('+'))
+  const c = await backend!.get(hash)
   if (c) {
-    debug('fm.cachedRequest', `cache hit for ${method} (user = ${params.user})`)
-    return c
+    debug('fm.cachedRequest', `cache hit for ${method} (hash = ${hash})`)
+    return JSON.parse(c)
   }
-  debug('fm.cachedRequest', `cache miss for ${method} (user = ${params.user})`)
+  debug('fm.cachedRequest', `cache miss for ${method} (hash = ${hash})`)
 
-  const r = await client.request(method, params)
-  await backend().setTTL(`${method}${JSON.stringify(params)}`, r, ttl)
-  debug('fm.cachedRequest', `cached ${method} (user = ${params.user})`)
+  const r = await client.request(method, params).catch(() => undefined)
+  if (!r) return
+
+  await backend!.setTTL(hash, JSON.stringify(r), ttl)
+  debug('fm.cachedRequest', `cached ${method} (hash = ${hash})`)
   return r
 }
 
 export const getTopArtists = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
   const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
-  return response.topartists.artist.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
+  const added = await Promise.all(response.topartists.artist.map(addArtistCovers(user)))
+  return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
 export const getTopTracks = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
@@ -44,5 +50,13 @@ function sanitizeEntity (entity: Record<string, any>): Entity {
     name: entity.name as string,
     imageURL: (entity.image[3]['#text']) as string,
     playcount: parseInt(entity.playcount) || 0
+  }
+}
+
+function addArtistCovers (username: string) {
+  return async (artist: Record<string, any>) => {
+    const info = await cachedRequest('artist.getInfo', { artist: artist.name, username, track: '' }, 60 * 60 * 1000)
+    artist.image = info.artist.image
+    return artist
   }
 }

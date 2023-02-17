@@ -4,7 +4,7 @@ import { debug } from '../logging.js'
 debug('pool.worker', `worker started`)
 
 const internalDownload = async (id: string, dimensions: number = 300): Promise<boolean> => {
-    if (await isImageCached(id, dimensions)) {
+    if (isImageCached(id, dimensions)) {
       return true
     } else {
       await downloadImage(id, dimensions).then(() => undefined)

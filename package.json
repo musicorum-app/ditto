@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build:watch": "esbuild ./src/pool/worker.ts ./src/index.ts --watch --bundle --platform=node --target=node19 --color=true --packages=external --format=esm --outdir=dist --splitting",
+    "build": "esbuild ./src/pool/worker.ts ./src/index.ts --bundle --platform=node --target=node19 --color=true --packages=external --format=esm --outdir=dist --splitting",
     "start": "node dist/index.js",
     "start:watch": "nodemon --watch dist dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,7 +26,7 @@
     "@polka/send-type": "^0.5.2",
     "piscina": "^3.2.0",
     "polka": "^0.5.2",
-    "redis": "^4.6.2",
+    "redis": "^4.6.4",
     "serve-static": "^1.15.0",
     "workerpool": "^6.3.1"
   },
