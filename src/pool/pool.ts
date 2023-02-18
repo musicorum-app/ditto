@@ -3,7 +3,7 @@ import { isImageCached } from '../imaging.js'
 
 const pool = new Piscina({
   filename: new URL('./pool/worker.js', import.meta.url).pathname,
-  minThreads: process.env.MIN_THREAD_POOL_SIZE || 8
+  minThreads: process.env.MIN_THREAD_POOL_SIZE || 5
 })
 
 const exec = async (key: string, data: unknown[]): Promise<unknown> => {

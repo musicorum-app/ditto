@@ -1,6 +1,6 @@
 import { CollageData } from '../../types.js'
 import { create } from '../utils/toolbox.js'
-import { CollageEntityTypes, drawTile, getImagesBeforehandVariation } from '../utils/collages.js'
+import { drawTile, getImagesBeforehandVariation } from '../utils/collages.js'
 import { PAD_SIZE } from '../constants.js'
 
 const SIZES = [600, 400, 300]
@@ -45,19 +45,12 @@ const determineRows = (tiles: Array<unknown> = new Array(40).fill(0)): [[number,
 
 const ORDERING = determineRows()
 
-const sanityCheck = (data: CollageData) => {
-  if (!data.username || !data.entity) {
-    throw new Error('Missing username or entity')
-  }
-}
-
 export default async (id: string, data: CollageData): Promise<void> => {
-  sanityCheck(data)
   const { ctx, finish } = create(2450, 2360, true)
-  const entities = await CollageEntityTypes[data.entity](data.username, 40, data.period)
-  await getImagesBeforehandVariation(entities, ORDERING)
 
-  await Promise.allSettled(entities.map((tile, index) => drawTile(tile, index, ctx, data, ORDERING[index][1], ORDERING[index][0])))
+  await getImagesBeforehandVariation(data.tiles, ORDERING)
+
+  await Promise.allSettled(data.tiles.map((tile, index) => drawTile(tile, index, ctx, data, ORDERING[index][1], ORDERING[index][0])))
 
   return finish(id)
 }
