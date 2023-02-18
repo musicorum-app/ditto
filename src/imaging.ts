@@ -1,6 +1,7 @@
 import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import { error, info } from './logging.js'
 import { statSync } from 'node:fs'
+import { createHash } from 'crypto'
 
 const CACHE_DIR = process.env.CACHE_DIR ?? '.cache/ditto'
 export const GENERATION_CACHE_DIR = process.env.EXPORT_DIR ?? `${CACHE_DIR}/generated`
@@ -12,21 +13,20 @@ export const createDirectory = async () => {
     await mkdir(GENERATION_CACHE_DIR, { recursive: true })
 }
 
-export const generatedImagePath = (id: string) => `${GENERATION_CACHE_DIR}/${id}.jpg`
-
 const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
+const hashedImageURL = (id: string, dimensions: number = 300) => createHash('sha1').update(getImageURL(id, dimensions)).digest('hex')
 
 export const isImageCached = (id: string, dimensions: number = 300): boolean => {
     try {
-        const file = statSync(`${CACHE_DIR}/${id}_${dimensions}.jpg`)
+        const file = statSync(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`)
         return !!file
     } catch (_) {
         return false
     }
 }
 
-export const extractIDFromURL = (url: string): string | undefined => {
-    return url.split('/').pop()?.split('.')?.shift()
+export const extractIDFromURL = (url: string): string => {
+    return url.split('/').pop?.()?.split?.('.')?.shift?.() ?? DEFAULT_IMAGE_ID
 }
 
 export const getImage = async (id: string, dimensions: number = 300): Promise<Buffer> => {
@@ -49,9 +49,9 @@ export const downloadImage = async (id: string, dimensions: number = 300): Promi
 }
 
 const getImageFromDisk = async (id: string, dimensions: number): Promise<Buffer | undefined> => {
-    return readFile(`${CACHE_DIR}/${id}_${dimensions}.jpg`).catch(() => undefined)
+    return readFile(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`).catch(() => undefined)
 }
 
 const saveImage = async (id: string, dimensions: number, image: Buffer) => {
-    await writeFile(`${CACHE_DIR}/${id}_${dimensions}.jpg`, image)
+    await writeFile(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`, image)
 }

@@ -12,7 +12,6 @@ export const templates = {
 export const generate = async ({ theme, data, id }: GenerateData): Promise<GeneratorResponse> => {
   if (!data) return { error: true, message: 'No data provided', id: undefined }
   id = id || Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
-  theme = theme === 'grid' ? 'classic_collage' : theme
 
   const factory: TemplateFactory = templates[theme]
   if (!factory) return { error: true, message: 'Invalid theme', id: undefined }
