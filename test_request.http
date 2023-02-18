@@ -1,0 +1,147 @@
+POST http://localhost:3000/generate
+Content-Type: application/json
+
+{
+  "id": "UMKp4hQJTVaEet2pWaHwUqGtBHKSogAyCdCvjqayTH94xj",
+  "user": {
+    "username": "metye",
+    "name": "matheus",
+    "scrobbles": 22193
+  },
+  "theme": "classic_collage",
+  "story": false,
+  "hide_username": false,
+  "data": {
+    "rows": 5,
+    "columns": 5,
+    "show_names": true,
+    "show_playcount": true,
+    "tiles": [
+      {
+        "name": "Lowlife Princess: Noir",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/c80dc7ca44445fe8b6d826395fccaa9b.jpg",
+        "sub": "201 scrobbles"
+      },
+      {
+        "name": "Little Electric Chicken Heart",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/e4c119eee7eae91a79c93c488a58c687.jpg",
+        "sub": "131 scrobbles"
+      },
+      {
+        "name": "私と放電",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/70260f84da9549d4ad3d0531d80b477d.jpg",
+        "sub": "86 scrobbles"
+      },
+      {
+        "name": "사랑하는 사람들을 위한 지침서",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/c92f6d9852aa5c07437d3f72087a6953.jpg",
+        "sub": "79 scrobbles"
+      },
+      {
+        "name": "勝訴ストリップ",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/65447c6f52a8d9e21aa9d012eef03d53.jpg",
+        "sub": "79 scrobbles"
+      },
+      {
+        "name": "Life is a Bi…",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/f162e19f4c8517190fa890d0f7dcebb4.jpg",
+        "sub": "64 scrobbles"
+      },
+      {
+        "name": "First Love",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/b68ccc333803c6475793b812dafe770b.jpg",
+        "sub": "57 scrobbles"
+      },
+      {
+        "name": "El Mal Querer",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/30cf2d09be4f1fb66eafd03dcc7343d2.png",
+        "sub": "55 scrobbles"
+      },
+      {
+        "name": "無罪モラトリアム",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/69a7891367051b8d6872a8c2b67cd868.jpg",
+        "sub": "52 scrobbles"
+      },
+      {
+        "name": "Intro Bonito",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/1da55693cc6e1340d1d403b4a8c55680.png",
+        "sub": "47 scrobbles"
+      },
+      {
+        "name": "Mormaço Queima",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/420b7e320a74c2e014d8ef73e5db8f32.jpg",
+        "sub": "42 scrobbles"
+      },
+      {
+        "name": "ANTIFRAGILE",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/47403415f97336603c88ea4c1062d4b1.jpg",
+        "sub": "42 scrobbles"
+      },
+      {
+        "name": "‘The ReVe Festival 2022 - Birthday’",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/edbf84a67c4cdd397c6594b4207874bd.png",
+        "sub": "41 scrobbles"
+      },
+      {
+        "name": "FEARLESS",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/e9241af49d5f63f63cf1b000a4276f46.png",
+        "sub": "40 scrobbles"
+      },
+      {
+        "name": "[#]",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/31cd8231f47370fa61879d95715f5f19.jpg",
+        "sub": "40 scrobbles"
+      },
+      {
+        "name": "Stamp On It - The 1st Mini Album",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/39eade525fc27a6a27980835b0f0b5f4.jpg",
+        "sub": "36 scrobbles"
+      },
+      {
+        "name": "SHISHAMO 3",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/8d9eb178fcfdf533aeef2e68513b940b.jpg",
+        "sub": "33 scrobbles"
+      },
+      {
+        "name": "百薬の長",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/a78e295f868bf636e93e8b04ff47e44d.jpg",
+        "sub": "32 scrobbles"
+      },
+      {
+        "name": "MOONLIGHT SUNRISE",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/dce3ec1a179a248ed33238cdacbe37d8.jpg",
+        "sub": "32 scrobbles"
+      },
+      {
+        "name": "‘The ReVe Festival 2022 - Feel My Rhythm’",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/9812fcb0317a46ef41fb79af1243a27e.jpg",
+        "sub": "31 scrobbles"
+      },
+      {
+        "name": "NewJeans 'OMG'",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/44220ed382b7fba2e1c3e166528ba3a2.jpg",
+        "sub": "30 scrobbles"
+      },
+      {
+        "name": "LLYLM",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/3ef8ac43e40edeaf9e91fa25114d4db2.jpg",
+        "sub": "30 scrobbles"
+      },
+      {
+        "name": "SOS",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/b2cfb5bdf137f4d6293565205965750f.jpg",
+        "sub": "30 scrobbles"
+      },
+      {
+        "name": "スポーツ",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/7d86b2f26b076bda660c1552d815540d.jpg",
+        "sub": "30 scrobbles"
+      },
+      {
+        "name": "move",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/5b3fd04304e742e191c88fe337de08b9.jpg",
+        "sub": "29 scrobbles"
+      }
+    ]
+  }
+}

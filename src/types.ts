@@ -10,16 +10,18 @@ export interface GenerateData {
 export interface TemplateData {}
 
 export interface CollageData extends TemplateData {
-  username: string
-  entity: string
-  asymmetric?: boolean
-  period?: string
+  tiles: CollageTileData[]
   rows: number
   columns: number
   padded?: boolean
-  show_labels?: boolean
+  show_names?: boolean
+  show_playcount?: boolean
+}
 
-  show_play_count?: boolean
+export interface CollageTileData {
+  image: string
+  name: string
+  sub: string | undefined
 }
 
 export interface GeneratorResponse {
