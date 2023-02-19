@@ -1,5 +1,5 @@
-import { writeFile, mkdir, readFile } from 'node:fs/promises'
-import { error, info } from './logging.js'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { debug, error } from './logging.js'
 import { statSync } from 'node:fs'
 import { createHash } from 'crypto'
 
@@ -9,7 +9,7 @@ export const GENERATION_CACHE_DIR = process.env.EXPORT_DIR ?? `${CACHE_DIR}/gene
 const DEFAULT_IMAGE_ID = '4128a6eb29f94943c9d206c08e625904'
 
 export const createDirectory = async () => {
-    await mkdir(CACHE_DIR, { recursive: true })
+  await mkdir(CACHE_DIR, { recursive: true })
     await mkdir(GENERATION_CACHE_DIR, { recursive: true })
 }
 
@@ -35,7 +35,6 @@ export const getImage = async (id: string, dimensions: number = 300): Promise<Bu
 }
 
 export const downloadImage = async (id: string, dimensions: number = 300): Promise<Buffer> => {
-    info('imaging.downloadImage', `downloading image ${id} with dimensions ${dimensions}`)
     const url = getImageURL(id, dimensions)
     const response = await fetch(url)
     if (!response.ok) {
@@ -48,10 +47,12 @@ export const downloadImage = async (id: string, dimensions: number = 300): Promi
     return buffer
 }
 
-const getImageFromDisk = async (id: string, dimensions: number): Promise<Buffer | undefined> => {
-    return readFile(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`).catch(() => undefined)
+export const getImageFromDisk = async (id: string, dimensions: number): Promise<Buffer | undefined> => {
+  return readFile(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`).catch(() => undefined)
 }
 
-const saveImage = async (id: string, dimensions: number, image: Buffer) => {
-    await writeFile(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`, image)
+export const saveImage = async (id: string, dimensions: number, image: Buffer) => {
+  const hash = hashedImageURL(id, dimensions)
+  debug('imaging.saveImage', `saving image ${id} with dimensions ${dimensions}`)
+  await writeFile(`${CACHE_DIR}/${hash}.jpg`, image)
 }

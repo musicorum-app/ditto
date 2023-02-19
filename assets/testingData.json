@@ -1,5 +1,58 @@
 [
   {
+    "name": "Duotone (album, 1 month)",
+    "path": "duotone",
+    "data": {
+      "theme": "duotone",
+      "user": {
+        "name": "tha",
+        "username": "blueslimee",
+        "image": "https://lastfm.freetls.fastly.net/i/u/300x300/a3f78484a8b11a8f54898ae7fc6b2a64.png",
+        "scrobbles": "123,289"
+      },
+      "data": {
+        "title": "aiaiaiai um macaco me mordeu",
+        "subtitle": "ta doendo muito",
+        "palette": [
+          "#EE0D92",
+          "#FFBADF"
+        ],
+        "items": [
+          {
+            "name": "Lowlife Princess: Noir",
+            "image": "https://lastfm.freetls.fastly.net/i/u/300x300/c80dc7ca44445fe8b6d826395fccaa9b.jpg",
+            "subtitle": "201 scrobbles"
+          },
+          {
+            "name": "Little Electric Chicken Heart",
+            "image": "https://lastfm.freetls.fastly.net/i/u/300x300/e4c119eee7eae91a79c93c488a58c687.jpg",
+            "subtitle": "131 scrobbles"
+          },
+          {
+            "name": "私と放電",
+            "image": "https://lastfm.freetls.fastly.net/i/u/300x300/70260f84da9549d4ad3d0531d80b477d.jpg",
+            "subtitle": "86 scrobbles"
+          },
+          {
+            "name": "사랑하는 사람들을 위한 지침서",
+            "image": "https://lastfm.freetls.fastly.net/i/u/300x300/c92f6d9852aa5c07437d3f72087a6953.jpg",
+            "subtitle": "79 scrobbles"
+          },
+          {
+            "name": "勝訴ストリップ",
+            "image": "https://lastfm.freetls.fastly.net/i/u/300x300/65447c6f52a8d9e21aa9d012eef03d53.jpg",
+            "subtitle": "79 scrobbles"
+          },
+          {
+            "name": "Life is a Bi…",
+            "image": "https://lastfm.freetls.fastly.net/i/u/300x300/f162e19f4c8517190fa890d0f7dcebb4.jpg",
+            "subtitle": "64 scrobbles"
+          }
+        ]
+      }
+    }
+  },
+  {
     "name": "Classic collage (5x5, padded, 1 month, album, with labels)",
     "path": "classic_collage",
     "data": {

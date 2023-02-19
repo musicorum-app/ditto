@@ -20,7 +20,7 @@ export const loadFonts = (): void => {
   const paths = getFontPaths('./assets/fonts')
   for (const path of paths) {
     const name = getFontNameFromPath(path)
-    debug('generator.fonts', `registering font ${name}...`)
+    debug('generator.fonts', `registering font "${name}"...`)
     const result = GlobalFonts.registerFromPath(path, name)
     if (!result) {
       error('generator.fonts', `failed to register font ${name}!`)

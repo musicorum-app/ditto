@@ -5,6 +5,7 @@
     "module": "esnext",
     "moduleResolution": "NodeNext",
     "strictNullChecks": true,
+    "jsx": "preserve"
   },
   "include": ["src/**/*"],
   "outDir": "dist"
