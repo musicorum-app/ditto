@@ -1,6 +1,6 @@
 import asymmetricCollage from './templates/asymmetricCollage.js'
 import classicCollage from './templates/classicCollage.js'
-import duotone from './templates/duotune.js'
+import duotone from './templates/duotone.js'
 
 import { GenerateData, GeneratorResponse, TemplateData } from '../types.js'
 import { debug, warn } from '../logging.js'
