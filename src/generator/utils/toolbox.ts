@@ -8,6 +8,10 @@ const finish = async (canvas: Canvas, id: string): Promise<any> => {
   return writeFile(`${GENERATION_CACHE_DIR}/${id}.jpg`, buffer)
 }
 
+export const finishBuffer = async (buffer: Buffer, id: string): Promise<any> => {
+  return writeFile(`${GENERATION_CACHE_DIR}/${id}.jpg`, buffer)
+}
+
 interface CreatedCanvas {
   ctx: SKRSContext2D
   finish: (id: string) => Promise<void>

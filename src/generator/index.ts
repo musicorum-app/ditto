@@ -4,6 +4,9 @@ import duotone from './templates/duotone.js'
 
 import { GenerateData, GeneratorResponse, TemplateData } from '../types.js'
 import { debug, warn } from '../logging.js'
+import { BlueprintManager } from '../blueprints/index.js'
+
+export const blueprintManager = new BlueprintManager(process.env.BLUEPRINTS_DIR ?? './blueprints')
 
 type TemplateFactory = (id: string, data: TemplateData, genData: GenerateData) => Promise<void>
 export const templates = {
@@ -13,11 +16,17 @@ export const templates = {
 }
 
 export const generate = async (data: GenerateData): Promise<GeneratorResponse> => {
-  if (!data) return { error: true, message: 'No data provided', id: undefined }
+  if (!data || !data.theme) return { error: true, message: 'No data provided', id: undefined }
   data.id = data.id || Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
 
-  const factory: TemplateFactory = templates[data.theme]
-  if (!factory) return { error: true, message: 'Invalid theme', id: undefined }
+  let factory: TemplateFactory = templates[data.theme]
+  if (!factory) {
+    if (!blueprintManager.hasBlueprint(data.theme)) return { error: true, message: 'Invalid theme', id: undefined }
+    factory = async (id: string, data: any, genData: GenerateData) => {
+      const result = await blueprintManager.render(genData.theme, id, data)
+      if (!result) throw new Error('Failed to render blueprint')
+    }
+  }
 
   debug('generator.generate', `generating ${data.theme} for ${data.id}`)
   const a = Date.now()

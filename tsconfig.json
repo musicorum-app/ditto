@@ -2,7 +2,7 @@
   "compilerOptions": {
     "incremental": true,
     "target": "esnext",
-    "module": "esnext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strictNullChecks": true,
     "jsx": "preserve"

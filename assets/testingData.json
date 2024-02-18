@@ -191,5 +191,15 @@
         ]
       }
     }
+  },
+  {
+    "name": "Hello World (using JSX templating system)",
+    "path": "hello_world",
+    "data": {
+      "theme": "hello-world",
+      "data": {
+        "title": "Hello world!!! 🗺☺🐱‍👤"
+      }
+    }
   }
 ]

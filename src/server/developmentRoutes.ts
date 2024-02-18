@@ -1,4 +1,4 @@
-import { generate } from '../generator/index.js'
+import { blueprintManager, generate } from '../generator/index.js'
 // @ts-ignore
 import send from '@polka/send-type'
 import serve from 'serve-static'
@@ -13,7 +13,7 @@ interface TestData {
 
 const loadJSON = (): TestData[] => JSON.parse(readFileSync('./assets/testingData.json', 'utf8'))
 let json: TestData[] = loadJSON()
-const jsonTestsToHtml = (json) => json.map((d) => `<li><a href="/testing/${d.path}">${d.name}</a></li>`)
+const jsonTestsToHtml = (json) => json.map((d) => `<li><a href="/testing/${d.path}">${d.name}</a></li>`).join('')
 
 const renderHTML = (file, data) => {
   let html = readFileSync(`./assets/testingPage/${file}`, 'utf8')
@@ -43,5 +43,13 @@ export default (server) => {
       return send(res, 400, `Error: ${message}`)
     }
     return send(res, 200, renderHTML('testViewer.html', { testName: test.name, time, id }), { 'Content-Type': 'text/html' })
+  })
+
+  server.get('/testing/:path/reload', async (req, res) => {
+    await blueprintManager.transformBlueprints().then(async () => {
+      await blueprintManager.loadBlueprints()
+    })
+
+    return send(res, 200, 'Reloaded')
   })
 }

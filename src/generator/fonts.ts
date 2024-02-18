@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { debug, error } from '../logging.js'
 import { getFontNameFromPath } from '../utils.js'
 import { GlobalFonts } from '@napi-rs/canvas'
@@ -16,14 +16,24 @@ export const getFontPaths = (path: string): string[] => {
   return [...paths, ...folders.flatMap((x) => getFontPaths(x))]
 }
 
-export const loadFonts = (): void => {
+export const loadFonts = (loadToMemoryManually: boolean = false): ({ [key: string]: Buffer }) | undefined => {
   const paths = getFontPaths('./assets/fonts')
+  let manualLoad: { [key: string]: Buffer } = {}
   for (const path of paths) {
     const name = getFontNameFromPath(path)
-    debug('generator.fonts', `registering font "${name}"...`)
+
+    !loadToMemoryManually && debug('generator.fonts', `registering font "${name}"...`)
+    if (loadToMemoryManually) {
+      const buffer = readFileSync(path)
+      manualLoad[name] = buffer
+      continue
+    }
+    
     const result = GlobalFonts.registerFromPath(path, name)
     if (!result) {
       error('generator.fonts', `failed to register font ${name}!`)
     }
   }
+
+  return loadToMemoryManually ? manualLoad : undefined
 }

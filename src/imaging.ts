@@ -3,14 +3,16 @@ import { debug, error } from './logging.js'
 import { statSync } from 'node:fs'
 import { createHash } from 'crypto'
 
-const CACHE_DIR = process.env.CACHE_DIR ?? '.cache/ditto'
+export const CACHE_DIR = process.env.CACHE_DIR ?? '.cache/ditto'
 export const GENERATION_CACHE_DIR = process.env.EXPORT_DIR ?? `${CACHE_DIR}/generated`
+export const BLUEPRINT_CACHE_DIR = process.env.OUTPUT_BLUEPRINT_DIR ?? `${CACHE_DIR}/blueprints`
 
 const DEFAULT_IMAGE_ID = '4128a6eb29f94943c9d206c08e625904'
 
 export const createDirectory = async () => {
-  await mkdir(CACHE_DIR, { recursive: true })
+    await mkdir(CACHE_DIR, { recursive: true })
     await mkdir(GENERATION_CACHE_DIR, { recursive: true })
+    await mkdir(BLUEPRINT_CACHE_DIR, { recursive: true })
 }
 
 const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`

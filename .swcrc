@@ -8,7 +8,7 @@
         "transform": {
             "react": {
               "runtime": "automatic",
-              "importSource": "@emotion/react"
+              "importSource": "@lyricalsoul"
             }
         },
         "target": "es2022"

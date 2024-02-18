@@ -1,15 +1,14 @@
-/* Apply Inter font */
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('https://ditto.cool/fonts/inter/Inter-Regular.woff2') format('woff2');
+:root {
+    font-family: Inter, sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+
+@supports (font-variation-settings: normal) {
+    :root { font-family: InterVariable, sans-serif; }
 }
 
 body {
     background-color: #212121;
-    font-family: 'Inter', sans-serif;
     color: #fff;
 }
 
@@ -24,4 +23,32 @@ img {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+a:visited {
+    color: #00b0ff;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    padding-top: 30px;
+    width: 90vw;
+    z-index: 100;
+}
+
+button {
+    background-color: hsl(199, 93%, 27%);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
 }

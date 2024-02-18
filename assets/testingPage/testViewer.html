@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>ditto</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -14,5 +16,22 @@
     <h3>generated under id <code>{{id}}</code><br/>took <code>{{time}}ms</code></h3>
 </div>
 <img src="/results/{{id}}.jpg" alt="test image" id="img">
+<div class="menu">
+    <button onclick="window.location.href = '/';">back to home</button>
+    <button onclick="window.location.href = '/results/{{id}}.jpg';">download</button>
+    <button id="reload-button">reload template and regenerate</button>
+    <script>
+        // we have to make a get request to our current path + /reload
+        document.getElementById('reload-button').addEventListener('click', function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', window.location.pathname + '/reload', true);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    window.location.reload();
+                }
+            };
+        });
+    </script>
 </body>
 </html>
