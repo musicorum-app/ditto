@@ -30,10 +30,7 @@
     "piscina": "^4.3.1",
     "polka": "^0.5.2",
     "satori": "^0.10.13",
-    "serve-static": "^1.15.0",
-    "stailwc": "^0.17.0",
-    "tw-to-css": "^0.0.12",
-    "workerpool": "^9.1.0"
+    "serve-static": "^1.15.0"
   },
   "devDependencies": {
     "@swc/cli": "^0.3.9",

@@ -1,5 +1,4 @@
 import swc from '@swc/core'
-import stailws from 'stailwc/install'
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import satori from 'satori'
 import { BLUEPRINT_CACHE_DIR } from '../imaging.js'
