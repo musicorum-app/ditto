@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fm-integration
   workflow_dispatch:
 
 jobs:
@@ -35,20 +36,6 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            "ghcr.io/${{ github.repository }}:latest"
+            "ghcr.io/${{ github.repository }}:fm-latest"
             "ghcr.io/${{ github.repository }}:${{ steps.version.outputs.current-version}}-${{ github.run_id }}"
           labels: "version=${{ steps.version.outputs.current-version}}-${{ github.run_id }}"
-
-  deploy-stage:
-    name: "Staging deploy"
-    runs-on: ubuntu-latest
-    needs: build
-    environment: staging
-
-    steps:
-      - name: Deploy Stage
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
-          method: 'POST'
-          timeout: 30000
