@@ -4,7 +4,7 @@ import { downloadImages, downloadImagesWithObjects } from '../../pool/pool.js'
 import { getTopAlbums, getTopArtists, getTopTracks } from '../../fm/index.js'
 import { CollageData } from '../../types.js'
 import { COLLAGE_TILE_SIZE, PAD_SIZE } from '../constants.js'
-import { Image, SKRSContext2D } from '@napi-rs/canvas'
+import { Image, loadImage, SKRSContext2D } from '@napi-rs/canvas'
 import { debug } from '../../logging.js'
 import { createShadowGradient, font } from './toolbox.js'
 
@@ -45,8 +45,7 @@ export const drawTile = async (tile: Entity, index: number, ctx: SKRSContext2D, 
   const [x, y] = !position ? determineTilePosition(index, data) : position
   debug('classicCollage.drawTile', `drawing tile for ${tile.name} at (${x}, ${y})`)
   const buffer = await getImage(extractIDFromURL(tile.imageURL)!, size)
-  const image = new Image()
-  image.src = buffer
+  const image = await loadImage(buffer)
   ctx.drawImage(image, x, y, size, size)
 
   if (data.show_labels) {

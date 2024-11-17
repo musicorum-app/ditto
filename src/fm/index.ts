@@ -1,10 +1,10 @@
-import Client from '@musicorum/lastfm'
+import { LastClient } from '@musicorum/lastfm'
 import { backend } from '../caching/index.js'
 import { debug } from '../logging.js'
 import { Entity } from './types.js'
 import { createHash } from 'crypto'
 
-const client = new Client(process.env.FM_API_KEY!)
+const client = new LastClient(process.env.FM_API_KEY!)
 
 const md5 = (text: string) => {
   return createHash('md5').update(text).digest('hex')

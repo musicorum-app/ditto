@@ -13,16 +13,16 @@
     }
   },
   {
-    "name": "Classic collage (5x5, padded, 1 month, album, with labels)",
+    "name": "Classic collage (5x5, padded, 1 month, artist, with labels)",
     "path": "classic_collage",
     "data": {
-      "theme": "grid",
+      "theme": "classic_collage",
       "data": {
         "username": "blueslimee",
         "rows": 5,
         "columns": 5,
         "period": "1month",
-        "entity": "album",
+        "entity": "artist",
         "padded": true,
         "show_labels": true
       }

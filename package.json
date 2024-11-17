@@ -5,10 +5,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build:watch": "esbuild ./src/pool/worker.ts ./src/index.ts --watch --bundle --platform=node --target=node19 --color=true --packages=external --format=esm --outdir=dist --splitting",
-    "build": "esbuild ./src/pool/worker.ts ./src/index.ts --bundle --platform=node --target=node19 --color=true --packages=external --format=esm --outdir=dist --splitting",
-    "start": "node dist/index.js",
-    "start:watch": "nodemon --watch dist dist/index.js",
+    "build:watch": "swc src -d dist --watch --source-maps",
+    "build": "swc src -d dist --source-maps",
+    "start": "node dist/src/index.js",
+    "start:watch": "nodemon --watch dist dist/src/index.js dist/**/*",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "nodemonConfig": {
@@ -20,20 +20,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@musicorum/lastfm": "^0.0.11",
-    "@napi-rs/canvas": "^0.1.31",
+    "@musicorum/lastfm": "^0.3.1",
+    "@napi-rs/canvas": "^0.1.62",
     "@polka/parse": "^1.0.0-next.21",
     "@polka/send-type": "^0.5.2",
-    "piscina": "^3.2.0",
+    "dotenv": "^16.4.5",
+    "piscina": "^4.7.0",
     "polka": "^0.5.2",
-    "redis": "^4.6.4",
-    "serve-static": "^1.15.0",
-    "workerpool": "^6.3.1"
+    "redis": "^4.7.0",
+    "serve-static": "^1.16.2",
+    "workerpool": "^9.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18",
-    "@types/polka": "^0.5.4",
-    "esbuild": "^0.16.13",
-    "nodemon": "^2.0.20"
+    "@types/node": "^22.9.0",
+    "@types/polka": "^0.5.7",
+    "nodemon": "^3.1.7",
+    "@swc/cli": "^0.5.0",
+    "@swc/core": "^1.9.2"
   }
 }
