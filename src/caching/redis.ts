@@ -18,6 +18,10 @@ export default class RedisBackend extends CachingBackend {
     })
   }
 
+  #buildKey (key: string) {
+    return `ditto:${key}`
+  }
+
   async start () {
     try {
       await this.client!.connect()
@@ -36,21 +40,21 @@ export default class RedisBackend extends CachingBackend {
   }
 
   async get (key: string): Promise<any | undefined> {
-    return this.client!.get(key)
+    return this.client!.get(this.#buildKey(key))
   }
 
   async setTTL (key: string, value: any, ttl: number) {
-    await this.client!.set(key, value, {
+    await this.client!.set(this.#buildKey(key), value, {
       EX: ttl / 1000
     })
   }
 
   async set (key: string, value: any) {
-    await this.client!.set(key, value)
+    await this.client!.set(this.#buildKey(key), value)
   }
 
   async delete (key: string) {
-    await this.client!.del(key)
+    await this.client!.del(this.#buildKey(key))
   }
 
   async clear () {
