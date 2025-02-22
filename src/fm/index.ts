@@ -58,7 +58,7 @@ function sanitizeEntity (entity: Record<string, any>): Entity {
 
 function addArtistCovers () {
   return async (artist: Record<string, any>) => {
-    const info = await cachedRequest('artist.getInfo', { artist: artist.name, track: '' }, 6 * 60 * 60 * 1000)
+    const info = await cachedRequest('artist.getInfo', { artist: artist.name, username: 'blueslimee', track: '' }, 6 * 60 * 60 * 1000)
     artist.image = info.artist.image
     return artist
   }
@@ -70,7 +70,7 @@ function addTrackCovers () {
       return track
     }
 
-    const info = await cachedRequest('track.getInfo', { artist: track.artist.name, track: track.name, autocorrect: '1' }, 6 * 60 * 60 * 1000)
+    const info = await cachedRequest('track.getInfo', { artist: track.artist.name, track: track.name, username: 'blueslimee', autocorrect: '1' }, 6 * 60 * 60 * 1000)
     if (!info.track) {
       return track
     }
