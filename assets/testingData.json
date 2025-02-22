@@ -27,5 +27,21 @@
         "show_labels": true
       }
     }
+  },
+  {
+    "name": "Classic collage (5x5, padded, 1 month, tracks, with labels)",
+    "path": "classic_collage_track",
+    "data": {
+      "theme": "classic_collage",
+      "data": {
+        "username": "blueslimee",
+        "rows": 5,
+        "columns": 5,
+        "period": "6month",
+        "entity": "track",
+        "padded": true,
+        "show_labels": true
+      }
+    }
   }
 ]

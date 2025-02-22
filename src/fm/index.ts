@@ -3,6 +3,7 @@ import { backend } from '../caching/index.js'
 import { debug } from '../logging.js'
 import { Entity } from './types.js'
 import { createHash } from 'crypto'
+import { DEFAULT_IMAGE_ID, DEFAULT_TRACK_IMAGE_ID, defaultImageURL } from '../imaging.js'
 
 const client = new LastClient(process.env.FM_API_KEY!)
 
@@ -30,13 +31,14 @@ const cachedRequest = async (method: string, params: Record<string, string>, ttl
 
 export const getTopArtists = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
   const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
-  const added = await Promise.all(response.topartists.artist.map(addArtistCovers(user)))
+  const added = await Promise.all(response.topartists.artist.map(addArtistCovers()))
   return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
 export const getTopTracks = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
   const response = await cachedRequest('user.getTopTracks', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
-  return response.toptracks.track.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
+  const added = await Promise.all(response.toptracks.track.map(addTrackCovers()))
+  return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
 export const getTopAlbums = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
@@ -45,6 +47,7 @@ export const getTopAlbums = async (user: string, amount: number = 50, period: st
 }
 
 function sanitizeEntity (entity: Record<string, any>): Entity {
+  console.log(entity.image)
   return {
     mbid: entity.mbid || undefined,
     name: entity.name as string,
@@ -53,10 +56,26 @@ function sanitizeEntity (entity: Record<string, any>): Entity {
   }
 }
 
-function addArtistCovers (username: string) {
+function addArtistCovers () {
   return async (artist: Record<string, any>) => {
-    const info = await cachedRequest('artist.getInfo', { artist: artist.name, username, track: '' }, 6 * 60 * 60 * 1000)
+    const info = await cachedRequest('artist.getInfo', { artist: artist.name, track: '' }, 6 * 60 * 60 * 1000)
     artist.image = info.artist.image
     return artist
+  }
+}
+
+function addTrackCovers () {
+  return async (track: Record<string, any>) => {
+    if (track.image && track.image[3]['#text'] && !track.image[3]['#text'].includes(DEFAULT_TRACK_IMAGE_ID)) {
+      return track
+    }
+
+    const info = await cachedRequest('track.getInfo', { artist: track.artist.name, track: track.name, autocorrect: '1' }, 6 * 60 * 60 * 1000)
+    if (!info.track) {
+      return track
+    }
+
+    track.image = info.track.album?.image || new Array(4).fill({ '#text': defaultImageURL })
+    return track
   }
 }

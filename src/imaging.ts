@@ -6,7 +6,8 @@ import { createHash } from 'crypto'
 const CACHE_DIR = process.env.CACHE_DIR ?? '.cache/ditto'
 export const GENERATION_CACHE_DIR = process.env.EXPORT_DIR ?? `${CACHE_DIR}/generated`
 
-const DEFAULT_IMAGE_ID = '4128a6eb29f94943c9d206c08e625904'
+export const DEFAULT_IMAGE_ID = '4128a6eb29f94943c9d206c08e625904'
+export const DEFAULT_TRACK_IMAGE_ID = '2a96cbd8b46e442fc41c2b86b821562f'
 
 export const createDirectory = async () => {
     await mkdir(CACHE_DIR, { recursive: true })
@@ -15,6 +16,8 @@ export const createDirectory = async () => {
 
 const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
 const hashedImageURL = (id: string, dimensions: number = 300) => createHash('sha1').update(getImageURL(id, dimensions)).digest('hex')
+
+export const defaultImageURL = getImageURL(DEFAULT_IMAGE_ID)
 
 export const isImageCached = (id: string, dimensions: number = 300): boolean => {
     try {
