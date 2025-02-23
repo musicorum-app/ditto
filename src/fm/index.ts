@@ -31,13 +31,13 @@ const cachedRequest = async (method: string, params: Record<string, string>, ttl
 
 export const getTopArtists = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
   const response = await cachedRequest('user.getTopArtists', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
-  const added = await Promise.all(response.topartists.artist.map(addArtistCovers()))
+  const added = await Promise.all(response.topartists.artist.map(addArtistCovers(user)))
   return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
 export const getTopTracks = async (user: string, amount: number = 50, period: string = 'overall'): Promise<Entity[]> => {
   const response = await cachedRequest('user.getTopTracks', { user, limit: amount.toString(), period }, 30 * 60 * 1000)
-  const added = await Promise.all(response.toptracks.track.map(addTrackCovers()))
+  const added = await Promise.all(response.toptracks.track.map(addTrackCovers(user)))
   return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
 }
 
@@ -56,21 +56,21 @@ function sanitizeEntity (entity: Record<string, any>): Entity {
   }
 }
 
-function addArtistCovers () {
+function addArtistCovers (username: string) {
   return async (artist: Record<string, any>) => {
-    const info = await cachedRequest('artist.getInfo', { artist: artist.name, username: 'blueslimee', track: '' }, 6 * 60 * 60 * 1000)
+    const info = await cachedRequest('artist.getInfo', { artist: artist.name, username, track: '' }, 6 * 60 * 60 * 1000)
     artist.image = info.artist.image
     return artist
   }
 }
 
-function addTrackCovers () {
+function addTrackCovers (username: string) {
   return async (track: Record<string, any>) => {
     if (track.image && track.image[3]['#text'] && !track.image[3]['#text'].includes(DEFAULT_TRACK_IMAGE_ID)) {
       return track
     }
 
-    const info = await cachedRequest('track.getInfo', { artist: track.artist.name, track: track.name, username: 'blueslimee', autocorrect: '1' }, 6 * 60 * 60 * 1000)
+    const info = await cachedRequest('track.getInfo', { artist: track.artist.name, track: track.name, username, autocorrect: '1' }, 6 * 60 * 60 * 1000)
     if (!info.track) {
       return track
     }
