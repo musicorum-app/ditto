@@ -2,11 +2,13 @@ import asymmetricCollage from './templates/asymmetricCollage.js'
 import classicCollage from './templates/classicCollage.js'
 import { GenerateData, TemplateData, GeneratorResponse } from '../types.js'
 import { debug, warn } from '../logging.js'
+import charts from './templates/charts.js'
 
 type TemplateFactory = (id: string, data: TemplateData) => Promise<void>
 export const templates = {
   'classic_collage': classicCollage as TemplateFactory,
-  'asymmetric_collage': asymmetricCollage as TemplateFactory
+  'asymmetric_collage': asymmetricCollage as TemplateFactory,
+  'charts': charts as TemplateFactory
 }
 
 export const generate = async ({ theme, data, id }: GenerateData): Promise<GeneratorResponse> => {

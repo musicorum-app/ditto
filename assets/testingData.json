@@ -29,6 +29,22 @@
     }
   },
   {
+    "name": "Classic collage (5x3, padded, 1 month, artist, with labels)",
+    "path": "classic_collage_5x3",
+    "data": {
+      "theme": "classic_collage",
+      "data": {
+        "username": "blueslimee",
+        "rows": 5,
+        "columns": 3,
+        "period": "overall",
+        "entity": "artist",
+        "padded": true,
+        "show_labels": true
+      }
+    }
+  },
+  {
     "name": "Classic collage (5x5, padded, 1 month, tracks, with labels)",
     "path": "classic_collage_track",
     "data": {
@@ -41,6 +57,26 @@
         "entity": "track",
         "padded": true,
         "show_labels": true
+      }
+    }
+  },
+  {
+    "name": "Weekly chart (artist)",
+    "path": "chart_artist",
+    "data": {
+      "theme": "charts",
+      "data": {
+        "type": "artist",
+        "entries": [
+          {
+            "name": "Ariana Grande",
+            "photoURL": "https://hips.hearstapps.com/hmg-prod/images/ariana-grande-attends-the-wsj-magazine-2024-innovator-news-photo-1733523847.jpg?crop=1.00xw:0.669xh;0,0.0488xh&resize=1200:*",
+            "score": 893,
+            "comparison": "rose",
+            "peak": 1,
+            "lastWeek": 2
+          }
+        ]
       }
     }
   }

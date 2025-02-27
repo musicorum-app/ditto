@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000
 export const SERVER_URL = process.env.SERVER_URL || 'http://localhost:' + PORT
 
 const server = polka()
+// @ts-ignore
 server.use(json())
 
 server.use('/results', serve(GENERATION_CACHE_DIR))

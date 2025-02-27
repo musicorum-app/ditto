@@ -16,6 +16,7 @@ export const createDirectory = async () => {
 
 const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
 const hashedImageURL = (id: string, dimensions: number = 300) => createHash('sha1').update(getImageURL(id, dimensions)).digest('hex')
+const hashedRawImageURL = (url: string, width: number = 300, height: number = 300) => createHash('sha1').update(`${url}-${width}-${height}`).digest('hex')
 
 export const defaultImageURL = getImageURL(DEFAULT_IMAGE_ID)
 
@@ -57,4 +58,30 @@ const getImageFromDisk = async (id: string, dimensions: number): Promise<Buffer 
 
 const saveImage = async (id: string, dimensions: number, image: Buffer) => {
     await writeFile(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`, image)
+}
+
+const getRawImageFromDisk = async (url: string, width: number = 300, height: number = 300): Promise<Buffer | undefined> => {
+    return readFile(`${CACHE_DIR}/${hashedRawImageURL(url, width, height)}.jpg`).catch(() => undefined)
+}
+
+const saveRawImage = async (url: string, width: number, height: number, image: Buffer) => {
+    await writeFile(`${CACHE_DIR}/${hashedRawImageURL(url, width, height)}.jpg`, image)
+}
+
+const downloadRawImage = async (url: string, width: number = 300, height: number = 300): Promise<Buffer> => {
+    info('imaging.downloadRawImage', `downloading raw image from ${url}`)
+    const response = await fetch(url)
+    if (!response.ok) {
+        error('imaging.downloadRawImage', `failed to download raw image from ${url} (status code ${response.status})`)
+        return Buffer.from([])
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer())
+    await saveRawImage(url, width, height, buffer)
+    return buffer
+}
+
+export const getImageFromUrl = async (url: string, width: number = 300, height: number = 300): Promise<Buffer> => {
+    const image = await getRawImageFromDisk(url, width, height)
+    return image || downloadRawImage(url, width, height)
 }

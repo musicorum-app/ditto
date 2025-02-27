@@ -1,9 +1,11 @@
-import { generate } from '../generator/index.js'
+
 // @ts-ignore
 import send from '@polka/send-type'
 import serve from 'serve-static'
 import { readFileSync } from 'node:fs'
 import { GenerateData } from '../types.js'
+import { generate } from '../generator/index.js'
+import { deleteGeneratedImage } from '../generator/utils/toolbox.js'
 
 interface TestData {
   name: string
@@ -13,7 +15,7 @@ interface TestData {
 
 const loadJSON = (): TestData[] => JSON.parse(readFileSync('./assets/testingData.json', 'utf8'))
 let json: TestData[] = loadJSON()
-const jsonTestsToHtml = (json) => json.map((d) => `<li><a href="/testing/${d.path}">${d.name}</a></li>`)
+const jsonTestsToHtml = (json) => json.map((d) => `<li><a href="/testing/${d.path}">${d.name}</a></li>`).join('')
 
 const renderHTML = (file, data) => {
   let html = readFileSync(`./assets/testingPage/${file}`, 'utf8')
@@ -42,6 +44,7 @@ export default (server) => {
     if (error) {
       return send(res, 400, `Error: ${message}`)
     }
+    setTimeout(() => deleteGeneratedImage(id!), 500)
     return send(res, 200, renderHTML('testViewer.html', { testName: test.name, time, id }), { 'Content-Type': 'text/html' })
   })
 }

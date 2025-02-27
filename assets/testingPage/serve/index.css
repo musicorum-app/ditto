@@ -1,15 +1,14 @@
-/* Apply Inter font */
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('https://ditto.cool/fonts/inter/Inter-Regular.woff2') format('woff2');
+:root {
+    font-family: Inter, sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+
+@supports (font-variation-settings: normal) {
+    :root { font-family: InterVariable, sans-serif; }
 }
 
 body {
     background-color: #212121;
-    font-family: 'Inter', sans-serif;
     color: #fff;
 }
 
@@ -20,8 +19,68 @@ code {
 }
 
 img {
-    width: 100%;
+    height: auto;
+    width: 95%;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0;
+}
+
+a:visited {
+    color: #00b0ff;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+.view-result {
+    padding: 20px 20px 10px;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90vw;
+    z-index: 100;
+    padding-bottom: 20px;
+}
+
+button {
+    background-color: hsl(199, 93%, 27%);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: hsl(199, 93%, 17%);
+}
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    width: 50%;
+    height: auto;
+    position: relative;
+}
+
+.popup-content img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
 }
