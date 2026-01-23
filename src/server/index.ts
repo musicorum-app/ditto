@@ -36,6 +36,14 @@ export const start = async () => {
 
         "/generate": {
             POST: async (req: Request) => {
+                // if theres API_TOKEN on env, check for it in headers
+                if (process.env.API_TOKEN) {
+                    const token = req.headers.get('Authorization')?.replace('Bearer ', '')
+                    if (token !== process.env.API_TOKEN) {
+                        return Response.json({ error: true, message: 'Unauthorized' }, { status: 401 })
+                    }
+                }
+
                 const data = await req.json() as GenerateData
                 const { error, message, id, time } = await generate(data)
                 if (error) {
