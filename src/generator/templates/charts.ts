@@ -1,51 +1,51 @@
 import { colorVariation, create } from '../utils/toolbox.js'
-import { SKRSContext2D,  } from '@napi-rs/canvas'
+import { SKRSContext2D, } from '@napi-rs/canvas'
 
 export interface ChartData {
-  type: 'artist' | 'track' | 'album'
-  entries: {
-    name: string
-    photoURL: string
-    score: number
-    comparison: 'fell' | 'rose' | 'stayed' | 'new'
-    peak?: number
-    lastWeek?: number
-  }[]
+    type: 'artist' | 'track' | 'album'
+    entries: {
+        name: string
+        photoURL: string
+        score: number
+        comparison: 'fell' | 'rose' | 'stayed' | 'new'
+        peak?: number
+        lastWeek?: number
+    }[]
 }
 
 const TypeDefs = {
-  artist: {
-    title: ['ARTIST', 'CHART'],
-    // darker pink
-    color: '#E75480',
-  }
+    artist: {
+        title: ['ARTIST', 'CHART'],
+        // darker pink
+        color: '#E75480',
+    }
 }
 
 const generateGradients = (ctx: SKRSContext2D, color: string) => {
-  const lighter = colorVariation(color, 40)
-  const darker = colorVariation(color, 20)
+    const lighter = colorVariation(color, 40)
+    const darker = colorVariation(color, 20)
 
-  // gennrates a circle gradient from the center to the edges. centralized
-  const radius = 800
-  const x = MAX_WIDTH / 2
-  const y = 630
-  const extraX = 60
-  const gradient = ctx.createRadialGradient(x - extraX, y, 0, x + extraX, y, radius)
-  gradient.addColorStop(1, '#f0f0f0')
-  gradient.addColorStop(0., lighter)
-  gradient.addColorStop(0, darker)
-  ctx.fillStyle = gradient
-  ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2)
+    // gennrates a circle gradient from the center to the edges. centralized
+    const radius = 800
+    const x = MAX_WIDTH / 2
+    const y = 630
+    const extraX = 60
+    const gradient = ctx.createRadialGradient(x - extraX, y, 0, x + extraX, y, radius)
+    gradient.addColorStop(1, '#f0f0f0')
+    gradient.addColorStop(0., lighter)
+    gradient.addColorStop(0, darker)
+    ctx.fillStyle = gradient
+    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2)
 }
 
 const generateBottomGradient = (ctx: SKRSContext2D, color: string) => {
-  // generates a small gradient that goes from the color to a lighter version of it at the end of the canvas
-  const gradient = ctx.createLinearGradient(0, 800, 0, 1800)
-  const baseColor = colorVariation(color, 50)
-  gradient.addColorStop(0, '#f0f0f0')
-  gradient.addColorStop(0.9, colorVariation(baseColor, 20))
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 800, MAX_WIDTH, 1000)
+    // generates a small gradient that goes from the color to a lighter version of it at the end of the canvas
+    const gradient = ctx.createLinearGradient(0, 800, 0, 1800)
+    const baseColor = colorVariation(color, 50)
+    gradient.addColorStop(0, '#f0f0f0')
+    gradient.addColorStop(0.9, colorVariation(baseColor, 20))
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 800, MAX_WIDTH, 1000)
 }
 
 const MAX_WIDTH = 3000
@@ -437,36 +437,36 @@ const previewOverlay = (ctx: SKRSContext2D) => {
 }
  */
 export default async (id: string, data: ChartData): Promise<void> => {
-  const { ctx, finish } = create(MAX_WIDTH, MAX_HEIGHT)
+    const { ctx, finish } = create(MAX_WIDTH, MAX_HEIGHT)
 
-  // fill with f0f0f0
-  ctx.fillStyle = '#f0f0f0'
-  ctx.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT)
+    // fill with f0f0f0
+    ctx.fillStyle = '#f0f0f0'
+    ctx.fillRect(0, 0, MAX_WIDTH, MAX_HEIGHT)
 
-  // white, to light pink, light purple, and white (darker than #FFD1DC or #E6E6FA)
-  generateGradients(ctx, TypeDefs[data.type].color)
-  generateBottomGradient(ctx, TypeDefs[data.type].color)
+    // white, to light pink, light purple, and white (darker than #FFD1DC or #E6E6FA)
+    generateGradients(ctx, TypeDefs[data.type].color)
+    generateBottomGradient(ctx, TypeDefs[data.type].color)
 
-  // inter extra bold
-  const titleY = 313
-  ctx.font = '230px Inter Black'
-  // use gradient with type color: the type follows the same color, the second name is darker
-  const gradient = ctx.createLinearGradient(0, 0, 0, 1800)
-  gradient.addColorStop(0, TypeDefs[data.type].color)
-  gradient.addColorStop(0.5, colorVariation(TypeDefs[data.type].color, -20))
-  ctx.fillStyle = gradient
-  const size = ctx.measureText(TypeDefs[data.type].title[0])
-  const titleX = (MAX_WIDTH - size.width - ctx.measureText(TypeDefs[data.type].title[1]).width) / 2
-  ctx.fillText(TypeDefs[data.type].title[0], titleX, titleY)
-  ctx.fillStyle = colorVariation(TypeDefs[data.type].color, -20)
-  ctx.font = '230px Inter Medium'
-  ctx.fillText(TypeDefs[data.type].title[1], titleX + size.width, titleY)
+    // inter extra bold
+    const titleY = 313
+    ctx.font = '230px Inter Black'
+    // use gradient with type color: the type follows the same color, the second name is darker
+    const gradient = ctx.createLinearGradient(0, 0, 0, 1800)
+    gradient.addColorStop(0, TypeDefs[data.type].color)
+    gradient.addColorStop(0.5, colorVariation(TypeDefs[data.type].color, -20))
+    ctx.fillStyle = gradient
+    const size = ctx.measureText(TypeDefs[data.type].title[0])
+    const titleX = (MAX_WIDTH - size.width - ctx.measureText(TypeDefs[data.type].title[1]).width) / 2
+    ctx.fillText(TypeDefs[data.type].title[0], titleX, titleY)
+    ctx.fillStyle = colorVariation(TypeDefs[data.type].color, -20)
+    ctx.font = '230px Inter Medium'
+    ctx.fillText(TypeDefs[data.type].title[1], titleX + size.width, titleY)
 
-  // #f0f0f0 from 300 until the end
-  const NAME_SPACE = 280
-  const NAME_X = 50
-  ctx.fillStyle = '#f0f0f0fe'
-  ctx.fillRect(NAME_X, NAME_SPACE, MAX_WIDTH - (NAME_X * 2), MAX_HEIGHT - NAME_SPACE - NAME_X)
+    // #f0f0f0 from 300 until the end
+    const NAME_SPACE = 280
+    const NAME_X = 50
+    ctx.fillStyle = '#f0f0f0fe'
+    ctx.fillRect(NAME_X, NAME_SPACE, MAX_WIDTH - (NAME_X * 2), MAX_HEIGHT - NAME_SPACE - NAME_X)
 
-  return finish(id)
+    return finish(id)
 }

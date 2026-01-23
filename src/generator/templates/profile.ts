@@ -1,5 +1,4 @@
 import { CollageData } from '../../types.js'
-import asymmetricCollage from './asymmetricCollage.js'
 import { create } from '../utils/toolbox.js'
 
 /*
@@ -388,8 +387,8 @@ const previewOverlay = (ctx: SKRSContext2D) => {
 }
  */
 export default async (id: string, data: CollageData): Promise<void> => {
-  const { ctx, finish } = create(2000, 1500)
+    const { ctx, finish } = create(2000, 1500)
 
 
-  return finish(id)
+    return finish(id)
 }

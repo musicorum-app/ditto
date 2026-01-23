@@ -1,70 +1,51 @@
 import { CachingBackend } from './backend.js'
-import { createClient, RedisClientType, RedisModules } from 'redis'
-import { error } from '../logging.js'
+import { RedisClient } from 'bun'
 
 export default class RedisBackend extends CachingBackend {
-  public client?: RedisClientType<RedisModules>
+    public client?: RedisClient
 
-  constructor () {
-    super()
+    constructor() {
+        super()
 
-    this.client = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
-      socket: {
-        reconnectStrategy: () => {
-          return 5
+        if (!process.env.REDIS_URL) {
+            throw new Error('REDIS_URL environment variable is not set')
         }
-      }
-    })
-  }
 
-  #buildKey (key: string) {
-    return `ditto:${key}`
-  }
-
-  async start () {
-    try {
-      await this.client!.connect()
-      while (!this.client!.isOpen) {
-      }
-      if (!this.client!.isReady) {
-        await this.client!.disconnect()
-        delete this.client
-        return false
-      }
-      this.#registerErrorListener()
-      return true
-    } catch (e) {
-      return false
+        this.client = new RedisClient(process.env.REDIS_URL || 'redis://localhost:6379')
     }
-  }
 
-  async get (key: string): Promise<any | undefined> {
-    return this.client!.get(this.#buildKey(key))
-  }
+    async start() {
+        try {
+            // ioredis connects automatically, but we can test the connection
+            await this.client!.ping()
+            return true
+        } catch (e) {
+            return false
+        }
+    }
 
-  async setTTL (key: string, value: any, ttl: number) {
-    await this.client!.set(this.#buildKey(key), value, {
-      EX: ttl / 1000
-    })
-  }
+    async get(key: string): Promise<any | undefined> {
+        return this.client!.get(this.#buildKey(key))
+    }
 
-  async set (key: string, value: any) {
-    await this.client!.set(this.#buildKey(key), value)
-  }
+    async setTTL(key: string, value: any, ttl: number) {
+        await this.client!.set(this.#buildKey(key), value, 'EX', Math.floor(ttl / 1000))
+    }
 
-  async delete (key: string) {
-    await this.client!.del(this.#buildKey(key))
-  }
+    async set(key: string, value: any) {
+        await this.client!.set(this.#buildKey(key), value)
+    }
 
-  async clear () {
-    // UNIMPLEMENTED
-  }
+    async delete(key: string) {
+        await this.client!.del(this.#buildKey(key))
+    }
 
-  #registerErrorListener () {
-    this.client!.on('error', (err) => {
-      error('cachingEngine.redis', `The Redis client encountered an error: ${err}`)
-    })
-  }
+    async clear() {
+        // UNIMPLEMENTED
+    }
+
+    #buildKey(key: string) {
+        return `ditto:${key}`
+    }
 }
 

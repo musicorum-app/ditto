@@ -1,13 +1,12 @@
-FROM node:22-alpine
+FROM oven/bun:1-alpine
 
 WORKDIR /app
 RUN apk add --no-cache g++ make
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json bun.lock* ./
+RUN bun install --frozen-lockfile
 COPY . .
-RUN npm run build
 
 EXPOSE 3000
 
-CMD [ "node", "dist/src/index.js"]
+CMD ["bun", "run", "src/index.ts"]

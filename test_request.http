@@ -1,0 +1,13 @@
+// request to POST localhost:3000/generate with json body
+
+POST http://localhost:3000/generate
+Content-Type: application/json
+
+{
+  "theme": "classic_collage",
+  "data": {
+    "username": "blueslimee",
+    "period": "7day",
+    "entity": "artist"
+  }
+}
