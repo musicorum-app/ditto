@@ -1,5 +1,3 @@
-import { isWorkerThread } from 'piscina'
-import { threadId } from 'node:worker_threads'
 import { readFileSync } from 'node:fs'
 
 const reset = '\x1b[0m'
@@ -22,7 +20,7 @@ const log = (level: string, asciiColor: string, scope: string, message: string) 
     const date = new Date()
     // hh:mm:ss format
     const time = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
-    const thread = !isWorkerThread ? `    ${fuchsia}main` : `${royalBlue}worker ${threadId}`
+    const thread = !Bun.isMainThread ? `    ${fuchsia}main` : `${royalBlue}worker ${process.pid}`
     // pad
     console.log(`${grey}${time}${reset}  ${thread}${reset}  ${asciiColor}[${level}]${reset} (${italics}${scope}${reset}): ${message}`)
 }

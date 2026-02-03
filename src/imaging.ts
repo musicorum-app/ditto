@@ -6,15 +6,26 @@ import { createHash } from 'crypto'
 const CACHE_DIR = process.env.CACHE_DIR ?? '.cache/ditto'
 export const GENERATION_CACHE_DIR = process.env.EXPORT_DIR ?? `${CACHE_DIR}/generated`
 
-export const DEFAULT_IMAGE_ID = '4128a6eb29f94943c9d206c08e625904'
-export const DEFAULT_TRACK_IMAGE_ID = '2a96cbd8b46e442fc41c2b86b821562f'
+export const DEFAULT_IMAGE_IDS = ['c6f59c1e5e7240a4c0d427abd71f3dbb', '4128a6eb29f94943c9d206c08e625904']
+export const DEFAULT_IMAGE_ID = DEFAULT_IMAGE_IDS[1]
+
+export const isDefaultImageID = (id: string): boolean => {
+    return DEFAULT_IMAGE_IDS.includes(id)
+}
 
 export const createDirectory = async () => {
     await mkdir(CACHE_DIR, { recursive: true })
     await mkdir(GENERATION_CACHE_DIR, { recursive: true })
 }
 
-const getImageURL = (id: string, dimensions: number = 300) => `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
+const getImageURL = (id: string, dimensions: number = 300) => {
+    // if the id matches the default image id, set dim to 1000
+    if (id === DEFAULT_IMAGE_ID || dimensions === 600) {
+        dimensions = 1000
+    }
+
+    return `https://lastfm.freetls.fastly.net/i/u/${dimensions}x${dimensions}/${id}.jpg`
+}
 const hashedImageURL = (id: string, dimensions: number = 300) => createHash('sha1').update(getImageURL(id, dimensions)).digest('hex')
 const hashedRawImageURL = (url: string, width: number = 300, height: number = 300) => createHash('sha1').update(`${url}-${width}-${height}`).digest('hex')
 
@@ -39,9 +50,21 @@ export const getImage = async (id: string, dimensions: number = 300): Promise<Bu
 }
 
 export const downloadImage = async (id: string, dimensions: number = 300): Promise<Buffer> => {
+    // check if cached again
+    if (isImageCached(id, dimensions)) {
+        const cachedImage = await getImageFromDisk(id, dimensions)
+        if (cachedImage) {
+            return cachedImage
+        }
+    }
+
     info('imaging.downloadImage', `downloading image ${id} with dimensions ${dimensions}`)
     const url = getImageURL(id, dimensions)
-    const response = await fetch(url)
+    const response = await fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15'
+        }
+    })
     if (!response.ok) {
         error('imaging.downloadImage', `failed to download image for entity ${id} (status code ${response.status})`)
         return getImage(DEFAULT_IMAGE_ID, dimensions)

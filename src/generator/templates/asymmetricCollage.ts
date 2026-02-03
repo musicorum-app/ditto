@@ -22,7 +22,6 @@ const determinePositionAndSize = (position: number): (unknown, number) => [[numb
     return (_, index) => {
         const line = determineLinePerIndex(position, index)
 
-
         if (position === 0) return [[PAD_SIZE * (index + 1) + SIZES[0] * index, PAD_SIZE], SIZES[0]]
         if (position === 1) return [
             [(PAD_SIZE - 3) * ((index % 6) + 1) + SIZES[1] * (index % 6), PAD_SIZE * (1 + (line + 1)) + SIZES[0] + (line * SIZES[1])],

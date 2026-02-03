@@ -3,7 +3,7 @@ import { backend } from "../caching/index.js"
 import { debug } from "../logging.js"
 import { Entity } from "./types.js"
 import { createHash } from "crypto"
-import { DEFAULT_TRACK_IMAGE_ID, defaultImageURL, } from "../imaging.js"
+import { DEFAULT_IMAGE_ID, defaultImageURL, isDefaultImageID, } from "../imaging.js"
 
 const client = new LastClient(process.env.FM_API_KEY!)
 
@@ -109,7 +109,7 @@ function addTrackCovers(username: string) {
         if (
             track.image &&
             track.image[3]["#text"] &&
-            !track.image[3]["#text"].includes(DEFAULT_TRACK_IMAGE_ID)
+            !isDefaultImageID(track.image[3]["#text"])
         ) {
             return track
         }
