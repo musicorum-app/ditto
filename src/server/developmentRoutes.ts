@@ -11,9 +11,9 @@ interface TestData {
 
 const loadJSON = (): TestData[] => JSON.parse(readFileSync('./assets/testingData.json', 'utf8'))
 let json: TestData[] = loadJSON()
-const jsonTestsToHtml = (json) => json.map((d) => `<li><a href="/testing/${d.path}">${d.name}</a></li>`).join('')
+const jsonTestsToHtml = (json: TestData[]) => json.map((d) => `<li><a href="/testing/${d.path}">${d.name}</a></li>`).join('')
 
-const renderHTML = (file, data) => {
+const renderHTML = (file: string, data: Record<string, any>) => {
     let html = readFileSync(`./assets/testingPage/${file}`, 'utf8')
     for (const key in data) {
         html = html.replaceAll(`{{${key}}}`, data[key])
