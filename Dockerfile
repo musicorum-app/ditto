@@ -3,6 +3,7 @@ FROM oven/bun:1-alpine
 WORKDIR /app
 RUN apk add --no-cache g++ make
 
+ENV NODE_ENV=production
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
 COPY . .

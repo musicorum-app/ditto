@@ -2,7 +2,7 @@
   "compilerOptions": {
     "incremental": true,
     "target": "esnext",
-    "module": "esnext",
+    "module": "nodenext",
     "moduleResolution": "NodeNext",
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true
