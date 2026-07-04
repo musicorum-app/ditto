@@ -1,55 +1,32 @@
-import { LastClient } from "@musicorum/lastfm"
-import { backend } from "../caching/index.js"
-import { debug } from "../logging.js"
 import { Entity } from "./types.js"
-import { createHash } from "crypto"
-import { DEFAULT_IMAGE_ID, defaultImageURL, isDefaultImageID, } from "../imaging.js"
 
-const client = new LastClient(process.env.FM_API_KEY!)
+const EPISTOLARES_ROOT_URL = process.env.EPISTOLARES_ROOT_URL || "https://epistolares.stg.musicorum.cloud"
 
-const md5 = (text: string) => {
-    return createHash("md5").update(text).digest("hex")
-}
-
-const cachedRequest = async (
-    method: string,
-    params: Record<string, string>,
-    ttl: number,
-) => {
-    debug(
-        "fm.cachedRequest",
-        `requesting ${method} with params ${JSON.stringify(params)}`,
-    )
-    const hash = md5(method + Object.values(params).join("+"))
-    const c = await backend!.get(hash).then((r) => JSON.parse(r || 'null')).catch(() => null)
-    if (c) {
-        debug("fm.cachedRequest", `cache hit for ${method} (hash = ${hash})`)
-        return c
+const request = async (path: string, params: Record<string, string>) => {
+    const url = new URL(path, EPISTOLARES_ROOT_URL)
+    url.search = new URLSearchParams(params).toString()
+    const response = await fetch(url.toString())
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`)
     }
-    debug("fm.cachedRequest", `cache miss for ${method} (hash = ${hash})`)
 
-    const r = await client.request(method, params)
-    if (!r) return
-
-    await backend!.setTTL(hash, JSON.stringify(r), ttl)
-    debug("fm.cachedRequest", `cached ${method} (hash = ${hash})`)
-    return r
+    return response.json()
 }
 
 export const getTopArtists = async (
-    user: string,
+    username: string,
     amount: number = 50,
     period: string = "overall",
 ): Promise<Entity[]> => {
-    const response = await cachedRequest(
-        "user.getTopArtists",
-        { user, limit: amount.toString(), period },
-        30 * 60 * 1000,
-    )
-    const added = await Promise.all(
-        response.topartists.artist.map(addArtistCovers(user)),
-    )
-    return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
+    const response = await request('/user/charts', {
+        username,
+        type: 'artist',
+        period,
+        limit: amount.toString(),
+    })
+    
+    return response.items
+        .map(sanitizeEntity)
 }
 
 export const getTopTracks = async (
@@ -57,15 +34,15 @@ export const getTopTracks = async (
     amount: number = 50,
     period: string = "overall",
 ): Promise<Entity[]> => {
-    const response = await cachedRequest(
-        "user.getTopTracks",
-        { user, limit: amount.toString(), period },
-        30 * 60 * 1000,
-    )
-    const added = await Promise.all(
-        response.toptracks.track.map(addTrackCovers(user)),
-    )
-    return added.map(sanitizeEntity).sort((a, b) => b.playcount - a.playcount)
+    const response = await request('/user/charts', {
+        username: user,
+        type: 'track',
+        period,
+        limit: amount.toString(),
+    })
+
+    return response.items
+        .map(sanitizeEntity)
 }
 
 export const getTopAlbums = async (
@@ -73,64 +50,22 @@ export const getTopAlbums = async (
     amount: number = 50,
     period: string = "overall",
 ): Promise<Entity[]> => {
-    const response = await cachedRequest(
-        "user.getTopAlbums",
-        { user, limit: amount.toString(), period },
-        30 * 60 * 1000,
-    )
-    return response.topalbums.album
+    const response = await request('/user/charts', {
+        username: user,
+        type: 'album',
+        period,
+        limit: amount.toString(),
+    })
+
+    return response.items
         .map(sanitizeEntity)
-        .sort((a, b) => b.playcount - a.playcount)
 }
 
 function sanitizeEntity(entity: Record<string, any>): Entity {
     return {
-        mbid: entity.mbid || undefined,
+        id: entity.id as string,
         name: entity.name as string,
-        imageURL: entity.image[3]["#text"] as string,
-        playcount: parseInt(entity.playcount) || 0,
-    }
-}
-
-function addArtistCovers(username: string) {
-    return async (artist: Record<string, any>) => {
-        const info = await cachedRequest(
-            "artist.getInfo",
-            { artist: artist.name, username, track: "" },
-            6 * 60 * 60 * 1000,
-        )
-        artist.image = info.artist.image
-        return artist
-    }
-}
-
-function addTrackCovers(username: string) {
-    return async (track: Record<string, any>) => {
-        if (
-            track.image &&
-            track.image[3]["#text"] &&
-            !isDefaultImageID(track.image[3]["#text"])
-        ) {
-            return track
-        }
-
-        const info = await cachedRequest(
-            "track.getInfo",
-            {
-                artist: track.artist.name,
-                track: track.name,
-                username,
-                autocorrect: "1",
-            },
-            6 * 60 * 60 * 1000,
-        )
-        if (!info.track) {
-            return track
-        }
-
-        track.image =
-            info.track.album?.image ||
-            new Array(4).fill({ "#text": defaultImageURL })
-        return track
+        imageURL: entity.cover.defaultURL as string,
+        playcount: entity.playCount as number
     }
 }

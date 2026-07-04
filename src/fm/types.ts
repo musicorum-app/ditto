@@ -1,5 +1,5 @@
 export interface Entity {
-    mbid: string | undefined
+    id: string
     name: string
     playcount: number
     imageURL: string

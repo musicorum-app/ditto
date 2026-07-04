@@ -7,8 +7,7 @@ export interface GenerateData {
     data: TemplateData
 }
 
-export interface TemplateData {
-}
+export interface TemplateData {}
 
 export interface CollageData extends TemplateData {
     username: string
