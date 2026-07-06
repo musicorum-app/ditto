@@ -6,32 +6,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="/index.css">
 </head>
 
 <body>
-<h2>ditto image generator : test viewer</h2>
-<div>
-    <h3>{{testName}}</h3>
-    <h3>generated under id <code>{{id}}</code><br/>took <code>{{time}}ms</code></h3>
-</div>
-<img src="/results/{{id}}.jpg" alt="test image" id="img">
-<div class="menu">
-    <button onclick="window.location.href = '/';">back to home</button>
-    <button onclick="window.location.href = '/results/{{id}}.jpg';">download</button>
-    <button id="reload-button">reload template and regenerate</button>
-    <script>
-        // we have to make a get request to our current path + /reload
-        document.getElementById('reload-button').addEventListener('click', function () {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', window.location.pathname + '/reload', true);
-            xhr.send();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    window.location.reload();
-                }
-            };
-        });
-    </script>
+  <div class="layout-left">
+      <div class="header-info">
+          <h2>ditto image generator</h2>
+          <h3><strong>Test:</strong> {{testName}}</h3>
+          <h3><strong>ID:</strong> <code>{{id}}</code></h3>
+          <h3><strong>Time:</strong> <code>{{time}}ms</code></h3>
+      </div>
+      
+      <div class="menu">
+          <button id="reload-button">regenerate from new blueprint</button>
+          <button id="auto-reload-button">auto-reload: checking...</button>
+          <button id="download-button">download image</button>
+          <button id="home-button">back to home</button>
+      </div>
+  </div>
+
+  <div class="layout-right" style="background-color: #e5e7eb; overflow: hidden; padding: 2rem;">
+      <img src="/results/{{id}}.jpg" alt="test image" id="img" class="preview-image">
+  </div>
+
+  <div class="popup-overlay" id="imagePopup">
+    <div class="popup-content">
+        <img src="/results/{{id}}.jpg" alt="test image">
+    </div>
+  </div>
+
+  <script>
+      const homeBtn = document.getElementById('home-button');
+      const downloadBtn = document.getElementById('download-button');
+      const reloadBtn = document.getElementById('reload-button');
+      const autoReloadBtn = document.getElementById('auto-reload-button');
+      const img = document.getElementById('img');
+      const popup = document.getElementById('imagePopup');
+
+      homeBtn.addEventListener('click', () => {
+          window.location.href = '/testing';
+      });
+
+      downloadBtn.addEventListener('click', () => {
+          window.location.href = '/results/{{id}}.jpg';
+      });
+
+      const updateAutoReloadUI = () => {
+          const isEnabled = localStorage.getItem('ditto:reload') === 'true';
+          autoReloadBtn.textContent = `auto-reload: ${isEnabled ? 'on' : 'off'}`;
+          autoReloadBtn.style.borderColor = isEnabled ? '#10b981' : '#d1d5db';
+          autoReloadBtn.style.color = isEnabled ? '#10b981' : '#374151';
+      };
+
+      autoReloadBtn.addEventListener('click', () => {
+          const isEnabled = localStorage.getItem('ditto:reload') === 'true';
+          localStorage.setItem('ditto:reload', (!isEnabled).toString());
+          updateAutoReloadUI();
+      });
+
+      updateAutoReloadUI();
+
+      reloadBtn.addEventListener('click', async () => {
+          reloadBtn.textContent = 'regenerating...';
+          reloadBtn.disabled = true;
+
+          try {
+              await fetch(`${window.location.pathname}/reload`);
+          } catch (e) {
+              console.error(e);
+          }
+
+          const interval = setInterval(async () => {
+              try {
+                  const response = await fetch('http://localhost:3000/metadata');
+                  if (response.ok) {
+                      clearInterval(interval);
+                      window.location.reload();
+                  }
+              } catch (e) {}
+          }, 200);
+      });
+
+      setInterval(async () => {
+          const isEnabled = localStorage.getItem('ditto:reload') === 'true';
+          if (!isEnabled) return;
+
+          try {
+              const response = await fetch('http://localhost:3000/metadata');
+              if (response.ok) {
+                  window.location.reload();
+              }
+          } catch (e) {}
+      }, 2000);
+
+      img.addEventListener('click', () => {
+          popup.style.display = 'flex';
+      });
+
+      popup.addEventListener('click', (e) => {
+          if (e.target === popup) {
+              popup.style.display = 'none';
+          }
+      });
+
+      document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+              popup.style.display = 'none';
+          }
+      });
+  </script>
 </body>
 </html>

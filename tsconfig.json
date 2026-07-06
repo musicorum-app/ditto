@@ -2,10 +2,11 @@
   "compilerOptions": {
     "incremental": true,
     "target": "esnext",
-    "module": "NodeNext",
+    "module": "nodenext",
     "moduleResolution": "NodeNext",
     "strictNullChecks": true,
-    "jsx": "preserve"
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "bun"]
   },
   "include": ["src/**/*"],
   "outDir": "dist"

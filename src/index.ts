@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { debug, info, welcome } from './logging.js'
 import { getVersion } from './utils.js'
 import { createDirectory } from './imaging.js'

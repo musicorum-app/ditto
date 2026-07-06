@@ -1,11 +1,10 @@
 export interface GenerateData {
-  id: string
-  theme: string
-  user?: GenerateUserData
-  story: boolean
-  hide_username: boolean
-  return_image: boolean
-  data: TemplateData
+    id: string
+    theme: string
+    story: boolean
+    hide_username: boolean
+    return_image: boolean
+    data: TemplateData
 }
 
 export interface GenerateUserData {
@@ -32,23 +31,21 @@ export interface DuotoneItemData {
 }
 
 export interface CollageData extends TemplateData {
-  tiles: CollageTileData[]
-  rows: number
-  columns: number
-  padded?: boolean
-  show_names?: boolean
-  show_playcount?: boolean
-}
+    username: string
+    entity: string
+    asymmetric?: boolean
+    period?: string
+    rows: number
+    columns: number
+    padded?: boolean
+    show_labels?: boolean
 
-export interface CollageTileData {
-  image: string
-  name: string
-  sub: string | undefined
+    show_play_count?: boolean
 }
 
 export interface GeneratorResponse {
-  error: boolean
-  message: string | undefined
-  id: string | undefined
-  time?: number
+    error: boolean
+    message: string | undefined
+    id: string | undefined
+    time?: number
 }

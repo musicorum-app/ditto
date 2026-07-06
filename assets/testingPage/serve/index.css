@@ -1,54 +1,209 @@
 :root {
-    font-family: Inter, sans-serif;
-    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
-}
-
-@supports (font-variation-settings: normal) {
-    :root { font-family: InterVariable, sans-serif; }
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1;
 }
 
 body {
-    background-color: #212121;
-    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+.layout-left {
+    width: 300px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-right: 1px solid #d1d5db;
+    overflow-y: auto;
+}
+
+.layout-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+}
+
+.viewer-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #e5e7eb;
+    overflow: hidden;
+}
+
+.viewer-right {
+    width: 350px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-left: 1px solid #d1d5db;
+    overflow-y: auto;
+}
+
+h2 {
+    margin: 0 0 2rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+h3 {
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+h4 {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
 }
 
 code {
-    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
-    font-size: 14px;
-    background-color: #404040;
+    background: #f3f4f6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.85em;
+    color: #ef4444;
 }
 
-img {
-    width: 100%;
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+ul li a {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #374151;
+    background: #f9fafb;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
-a:visited {
-    color: #00b0ff;
+ul li a:hover {
+    background: #ffffff;
+    border-color: #d1d5db;
+    color: #111827;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-li {
-    margin-bottom: 10px;
+.tip-box {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #eff6ff;
+    border-radius: 0.5rem;
+    border: 1px solid #bfdbfe;
+    font-size: 0.875rem;
+    color: #1e3a8a;
+    line-height: 1.5;
+}
+
+.tip-box b {
+    color: #1e40af;
+}
+
+.empty-state {
+    text-align: center;
+    color: #9ca3af;
+}
+
+.empty-state svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    cursor: zoom-in;
+}
+
+.header-info {
+    margin-bottom: 2rem;
 }
 
 .menu {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    padding-top: 30px;
-    width: 90vw;
-    z-index: 100;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 button {
-    background-color: hsl(199, 93%, 27%);
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    border-radius: 0.375rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+button:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#reload-button {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+
+#reload-button:hover:not(:disabled) {
+    background: #374151;
+}
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.popup-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 0.5rem;
 }
