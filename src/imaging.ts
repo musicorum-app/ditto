@@ -19,8 +19,6 @@ export const createDirectory = async () => {
     await mkdir(BLUEPRINT_CACHE_DIR, { recursive: true })
 }
 
-const hashedRawImageURL = (url: string, width: number = 300, height: number = 300) => createHash('sha1').update(`${url}-${width}-${height}`).digest('hex')
-
 export const isImageCached = async (id: string, dimensions: number = 300): Promise<boolean> => {
     try {
         const file = await stat(`${CACHE_DIR}/${hashedImageURL(id, dimensions)}.jpg`)
@@ -28,32 +26,6 @@ export const isImageCached = async (id: string, dimensions: number = 300): Promi
     } catch (_) {
         return false
     }
-}
-
-const getRawImageFromDisk = async (url: string, width: number = 300, height: number = 300): Promise<Buffer | undefined> => {
-    return readFile(`${CACHE_DIR}/${hashedRawImageURL(url, width, height)}.jpg`).catch(() => undefined)
-}
-
-const saveRawImage = async (url: string, width: number, height: number, image: Buffer) => {
-    await writeFile(`${CACHE_DIR}/${hashedRawImageURL(url, width, height)}.jpg`, image)
-}
-
-const downloadRawImage = async (url: string, width: number = 300, height: number = 300): Promise<Buffer> => {
-    info('imaging.downloadRawImage', `downloading raw image from ${url}`)
-    const response = await fetch(url)
-    if (!response.ok) {
-        error('imaging.downloadRawImage', `failed to download raw image from ${url} (status code ${response.status})`)
-        return Buffer.from([])
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer())
-    await saveRawImage(url, width, height, buffer)
-    return buffer
-}
-
-export const getImageFromUrl = async (url: string, width: number = 300, height: number = 300): Promise<Buffer> => {
-    const image = await getRawImageFromDisk(url, width, height)
-    return image || downloadRawImage(url, width, height)
 }
 
 const pendingDownloads = new Map<string, Promise<Buffer>>()
@@ -114,7 +86,11 @@ export const downloadImage = async (id: string, dimensions: number, hash: string
     })
 
     if (!response.ok) {
-        error('imaging.downloadImage', `failed to download image for entity ${id} (status code ${response.status})`)
+        if (response.status === 404) {
+            return downloadImage(id, 500, hash) // save with the current hash to avoid re-downloading
+        }
+
+        error('imaging.downloadImage', `failed to download image for entity ${url} (status code ${response.status})`)
         return getImage(DEFAULT_IMAGE_ID, dimensions)
     }
 
