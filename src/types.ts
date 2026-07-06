@@ -7,7 +7,28 @@ export interface GenerateData {
     data: TemplateData
 }
 
-export interface TemplateData {}
+export interface GenerateUserData {
+  name: string
+  username: string
+  image?: string
+  scrobbles: number
+}
+
+export interface TemplateData {
+}
+
+export interface DuotoneData extends TemplateData {
+  items: DuotoneItemData[]
+  title: string
+  subtitle: string
+  palette: [string, string]
+}
+
+export interface DuotoneItemData {
+  image: string
+  name: string
+  secondary?: string
+}
 
 export interface CollageData extends TemplateData {
     username: string

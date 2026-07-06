@@ -1,7 +1,6 @@
-import { Canvas, createCanvas, Image, SKRSContext2D } from '@napi-rs/canvas'
-import { GENERATION_CACHE_DIR } from '../../imaging.js'
-import { writeFile } from 'node:fs/promises'
-import { unlinkSync } from 'node:fs'
+import { Canvas, createCanvas, Image, SKRSContext2D, loadImage as napiLoadImage } from '@napi-rs/canvas'
+import { extractIDFromURL, GENERATION_CACHE_DIR, getImage, getImageFromDisk } from '../../imaging.js'
+import { writeFile, unlink } from 'fs/promises'
 
 const finish = async (canvas: Canvas, id: string): Promise<any> => {
     const buffer = await canvas.encode('jpeg', 95)
@@ -10,10 +9,14 @@ const finish = async (canvas: Canvas, id: string): Promise<any> => {
 
 export const deleteGeneratedImage = async (id: string): Promise<void> => {
     try {
-        unlinkSync(`${GENERATION_CACHE_DIR}/${id}.jpg`)
+        await unlink(`${GENERATION_CACHE_DIR}/${id}.jpg`)
     } catch {
         // ignore
     }
+}
+
+export const finishBuffer = async (buffer: Buffer, id: string): Promise<any> => {
+  return writeFile(`${GENERATION_CACHE_DIR}/${id}.jpg`, buffer)
 }
 
 interface CreatedCanvas {
@@ -30,6 +33,30 @@ export const create = (width: number, height: number, fillWithBlack: boolean = f
     }
 
     return { ctx, finish: (id: string) => finish(canvas, id) }
+}
+
+export const createQuadro = (width: number, height: number, fillWithBlack: boolean = false): CreatedQuadroCanvas => {
+  const canvas = createCanvas(width, height)
+  const ctx = new Quadro(canvas.getContext('2d'))
+
+  if (fillWithBlack) {
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, width, height)
+  }
+
+  return { ctx, finish: (id: string) => finish(canvas, id) }
+}
+
+export const loadImage = async (image: string, size: number) => {
+  const buffer = await getImage(extractIDFromURL(image) || image, size);
+  // This decodes the image asynchronously in Rust, freeing the Node event loop
+  return await napiLoadImage(buffer); 
+}
+
+export const loadImageFromDisk = async (id: string, size: number) => {
+  const d = await getImageFromDisk(id, size);
+  if (!d) throw new Error("Image not found on disk");
+  return await napiLoadImage(d);
 }
 
 export const createShadowGradient = (ctx: SKRSContext2D, x: number, y: number, width: number, height: number): void => {
@@ -49,24 +76,26 @@ export const font = (name: string, size: number): string => `${size}px ${name}, 
 
 // given a determined hex color, returns a lighter or darker version of it
 export const colorVariation = (color: string, variation: number): string => {
-    // if val is positive, we'll make the color lighter. else, darker. 0-100
-    const hex = color.replace('#', '')
-    let r = parseInt(hex.substr(0, 2), 16)
-    let g = parseInt(hex.substr(2, 2), 16)
-    let b = parseInt(hex.substr(4, 2), 16)
-    r = Math.min(255, Math.max(0, r + Math.round(r * (variation / 100))))
-    g = Math.min(255, Math.max(0, g + Math.round(g * (variation / 100))))
-    b = Math.min(255, Math.max(0, b + Math.round(b * (variation / 100))))
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+    const hex = color.replace('#', '');
+    let r = parseInt(hex.slice(0, 2), 16);
+    let g = parseInt(hex.slice(2, 4), 16);
+    let b = parseInt(hex.slice(4, 6), 16);
+    
+    const factor = variation / 100;
+    r = Math.min(255, Math.max(0, r + Math.round(r * factor)));
+    g = Math.min(255, Math.max(0, g + Math.round(g * factor)));
+    b = Math.min(255, Math.max(0, b + Math.round(b * factor)));
+    
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
 // given a determined hex color, returns black or white, depending on the contrast
 export const contrastColor = (hex: string): string => {
-    const r = parseInt(hex.substr(1, 2), 16)
-    const g = parseInt(hex.substr(3, 2), 16)
-    const b = parseInt(hex.substr(5, 2), 16)
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000
-    return brightness >= 128 ? '#000000' : '#ffffff'
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness >= 128 ? '#000000' : '#ffffff';
 }
 
 // given a canvas context, clips an image to a circle and draws it on the canvas
@@ -106,33 +135,51 @@ export const drawRoundedRectangle = (ctx: SKRSContext2D, x: number, y: number, w
 
 export const indexOrZero = (arr: any[], index: number): any => arr[index] || arr[0]
 
-export const writeTextConsideringWidth = (ctx: SKRSContext2D, text: string, x: number, y: number, maxWidth: number): void => {
-    // if the text is too long, we'll reduce the size
-    let ogSize = parseInt(indexOrZero(ctx.font.split('px')[0].split(' '), 1))
-
-    const textSize = ctx.measureText(text)
-    while (ctx.measureText(text).width > maxWidth) {
-        ctx.font = ctx.font.replace(`${ogSize}px`, `${--ogSize}px`)
+export const writeTextConsideringWidth = (
+    ctx: SKRSContext2D, 
+    text: string, 
+    x: number, 
+    y: number, 
+    maxWidth: number, 
+    alignCenter: boolean = false
+): void => {
+    const fontMatch = ctx.font.match(/^(\d+)px\s+(.+)$/);
+    if (!fontMatch) {
+        ctx.fillText(text, x, y);
+        return;
     }
-    ctx.fillText(text, x, y)
+
+    let size = parseInt(fontMatch[1], 10);
+    const fontFamily = fontMatch[2];
+
+    while (size > 10 && ctx.measureText(text).width > maxWidth) {
+        size -= 1;
+        ctx.font = `${size}px ${fontFamily}`;
+    }
+
+    if (alignCenter) {
+        const finalWidth = ctx.measureText(text).width;
+        x = Math.abs(x + (maxWidth - finalWidth) / 2);
+    }
+
+    ctx.fillText(text, x, y);
 }
 
 export const writeTextCentralizedConsidering = (ctx: SKRSContext2D, text: string, leftBoundary: number, y: number, maxWidth: number): void => {
-    const textSize = ctx.measureText(text)
-    writeTextConsideringWidth(ctx, text, Math.abs(leftBoundary + (maxWidth - textSize.width) / 2), y, maxWidth)
+    writeTextConsideringWidth(ctx, text, leftBoundary, y, maxWidth, true);
 }
 
 export const drawTextShadow = (ctx: SKRSContext2D, text: string, x: number, y: number): void => {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'
     ctx.fillText(text, x + 1, y + 2)
 }
+const numberFormatter = new Intl.NumberFormat('en-US', { 
+    notation: "compact", 
+    maximumFractionDigits: 1 
+});
 
 export const readableNumber = (number: number): string => {
-    // adds suffixes to numbers, like 1k, 1m, 1b, etc. also adds commas to separate thousands
-    if (number < 1000) return number.toString()
-    if (number < 1000000) return (number / 1000).toFixed(1) + 'k'
-    if (number < 1000000000) return (number / 1000000).toFixed(1) + 'm'
-    return (number / 1000000000).toFixed(1) + 'b'
+    return numberFormatter.format(number).toLowerCase()
 }
 
 export const drawTextWrapped = (ctx: SKRSContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number): void => {

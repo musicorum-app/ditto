@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { debug, error } from '../logging.js'
 import { getFontNameFromPath } from '../utils.js'
 import { GlobalFonts } from '@napi-rs/canvas'

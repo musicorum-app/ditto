@@ -1,5 +1,6 @@
 import { downloadImage, isImageCached } from '../imaging.js'
 import { debug } from '../logging.js'
+import { duotonify } from '../generator/utils/duotone.js'
 
 declare var self: Worker
 

@@ -1,8 +1,8 @@
 import { CollageData } from '../../types.js'
-import asymmetricCollage from './asymmetricCollage.js'
 import { COLLAGE_TILE_SIZE, PAD_SIZE } from '../constants.js'
 import { create } from '../utils/toolbox.js'
 import { CollageEntityTypes, drawTile, getImagesBeforehand } from '../utils/collages.js'
+import asymmetricCollage from './asymmetricCollage.js'
 
 const determineSize = ({ rows, columns, padded }: CollageData): [number, number] => {
     const horizontalPadding = padded ? (rows + 1) * PAD_SIZE : 0

@@ -4,7 +4,7 @@ import { GenerateData, GeneratorResponse, TemplateData } from '../types.js'
 import { debug, warn } from '../logging.js'
 import charts from './templates/charts.js'
 
-type TemplateFactory = (id: string, data: TemplateData) => Promise<void>
+type TemplateFactory = (id: string, data: TemplateData, genData: GenerateData) => Promise<void>
 export const templates = {
     'classic_collage': classicCollage as TemplateFactory,
     'asymmetric_collage': asymmetricCollage as TemplateFactory,
