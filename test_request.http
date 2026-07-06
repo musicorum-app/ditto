@@ -1,13 +1,6 @@
 // request to POST localhost:3000/generate with json body
 
-POST http://localhost:3000/generate
+POST https://ditto-stg.musicorum.cloud/generate
 Content-Type: application/json
 
-{
-  "theme": "classic_collage",
-  "data": {
-    "username": "blueslimee",
-    "period": "7day",
-    "entity": "artist"
-  }
-}
+{"theme":"classic_collage","data":{"rows":3,"columns":3,"entity":"artist","padded":false,"show_labels":false,"period":"overall","username":"blueslimee"}}

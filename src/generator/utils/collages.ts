@@ -75,43 +75,59 @@ export const drawTile = async (
     size: number = COLLAGE_TILE_SIZE,
     position?: [number, number],
 ) => {
-    const [x, y] = !position ? determineTilePosition(index, data) : position
+    const [x, y] = position ?? determineTilePosition(index, data);
     debug(
         "classicCollage.drawTile",
         `drawing tile for ${tile.name} at (${x}, ${y})`,
-    )
-    const buffer = await getImage(extractIDFromURL(tile.imageURL)!, size)
-    const image = await loadImage(buffer)
-    ctx.drawImage(image, x, y, size, size)
+    );
+    
+    const buffer = await getImage(extractIDFromURL(tile.imageURL)!, size);
+    const image = await loadImage(buffer);
+
+    let sx = 0;
+    let sy = 0;
+    let sSize = image.width;
+
+    if (image.width > image.height) {
+        sSize = image.height;
+        sx = (image.width - sSize) / 2;
+    } else if (image.height > image.width) {
+        sSize = image.width;
+        sy = (image.height - sSize) / 2;
+    }
+    
+    ctx.drawImage(image, sx, sy, sSize, sSize, x, y, size, size);
 
     if (data.show_labels) {
-        createShadowGradient(ctx, x, y, size, size * 0.3)
-        ctx.fillStyle = "white"
+        createShadowGradient(ctx, x, y, size, size * 0.3);
+        ctx.fillStyle = "white";
 
-        let fontSize = 20
-        ctx.font = font("Inter Semi Bold", fontSize)
+        const maxWidth = size - 10;
+        let fontSize = 20;
+        let text = tile.name;
 
-        let text = tile.name
-        do {
-            fontSize -= 1
-            ctx.font = font("Inter Semi Bold", fontSize)
-            if (fontSize === 16) {
-                while (ctx.measureText(text).width > size - 7) {
-                    text = text.slice(0, -1)
-                }
-                text = text.slice(0, -3) + "..."
+        ctx.font = font("Inter Semi Bold", fontSize);
+
+        while (fontSize > 16 && ctx.measureText(text).width > maxWidth) {
+            fontSize -= 1;
+            ctx.font = font("Inter Semi Bold", fontSize);
+        }
+
+        if (ctx.measureText(text).width > maxWidth) {
+            let truncated = text;
+            while (truncated.length > 0 && ctx.measureText(truncated + "...").width > maxWidth) {
+                truncated = truncated.slice(0, -1);
             }
-        } while (ctx.measureText(text).width > size - 7)
+            text = truncated + "...";
+        }
 
-        ctx.fillText(text, x + 5, y + fontSize + 5)
+        const textY = y + fontSize + 5;
+        ctx.fillText(text, x + 5, textY);
 
         if (data.show_play_count !== false) {
-            ctx.font = font("Plex Sans Regular", 18)
-            ctx.fillText(
-                `${tile.playcount} scrobble${tile.playcount === 1 ? "" : "s"}`,
-                x + 5,
-                y + fontSize + 5 + 24,
-            )
+            ctx.font = font("Plex Sans Regular", 18);
+            const suffix = tile.playcount === 1 ? "" : "s";
+            ctx.fillText(`${tile.playcount} scrobble${suffix}`, x + 5, textY + 24);
         }
     }
 }
