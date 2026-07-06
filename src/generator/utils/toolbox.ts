@@ -54,7 +54,7 @@ export const loadImage = async (image: string, size: number) => {
 }
 
 export const loadImageFromDisk = async (id: string, size: number) => {
-  const d = await getImageFromDisk(id, size);
+  const d = await getImageFromDisk(id);
   if (!d) throw new Error("Image not found on disk");
   return await napiLoadImage(d);
 }

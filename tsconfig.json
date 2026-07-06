@@ -5,7 +5,8 @@
     "module": "nodenext",
     "moduleResolution": "NodeNext",
     "strictNullChecks": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "bun"]
   },
   "include": ["src/**/*"],
   "outDir": "dist"

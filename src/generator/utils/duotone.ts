@@ -5,7 +5,7 @@ import { isImageCached, saveImage } from '../../imaging.js'
 import { loadImage } from './toolbox.js'
 
 export const duotonify = async (id: string, dimensions: number, palette: [string, string]) => {
-  if (isImageCached(id + 'duotone', dimensions)) return
+  if (await isImageCached(id + 'duotone', dimensions)) return
 
   const img = await loadImage(id, dimensions)
   const scale = chroma.scale(palette)

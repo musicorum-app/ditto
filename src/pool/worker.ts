@@ -7,7 +7,7 @@ declare var self: Worker
 debug('pool.worker', `worker started`)
 
 const internalDownload = async (id: string, dimensions: number = 300): Promise<boolean> => {
-    if (isImageCached(id, dimensions)) {
+    if (await isImageCached(id, dimensions)) {
         return true
     } else {
         await downloadImage(id, dimensions).then(() => undefined)
