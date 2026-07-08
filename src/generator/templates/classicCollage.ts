@@ -11,7 +11,7 @@ const determineSize = ({ rows, columns, padded }: CollageData): [number, number]
 }
 
 const sanityCheck = (data: CollageData) => {
-    if (data.rows > 15 || data.columns > 15) {
+    if (data.rows > 25 || data.columns > 25) {
         throw new Error('Too many rows or columns')
     }
     if (!data.username || !data.entity) {
