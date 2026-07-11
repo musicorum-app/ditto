@@ -1,3 +1,4 @@
+import { DEFAULT_IMAGE_ID, getImageURL } from "../imaging.js"
 import { Entity } from "./types.js"
 
 const EPISTOLARES_ROOT_URL = process.env.EPISTOLARES_ROOT_URL || "https://epistolares.stg.musicorum.cloud"
@@ -65,7 +66,7 @@ function sanitizeEntity(entity: Record<string, any>): Entity {
     return {
         id: entity.id as string,
         name: entity.name as string,
-        imageURL: entity.cover.defaultURL as string,
+        imageURL: entity.cover?.defaultURL as string || getImageURL(DEFAULT_IMAGE_ID),
         playcount: entity.playCount as number
     }
 }

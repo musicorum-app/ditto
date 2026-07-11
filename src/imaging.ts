@@ -30,7 +30,7 @@ export const isImageCached = async (id: string, dimensions: number = 300): Promi
 
 const pendingDownloads = new Map<string, Promise<Buffer>>()
 
-const getImageURL = (id: string, dimensions: number = 300) => {
+export const getImageURL = (id: string, dimensions: number = 300) => {
     if (id === DEFAULT_IMAGE_ID || dimensions === 600) {
         dimensions = 1000
     }
